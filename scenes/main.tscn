@@ -1,0 +1,323 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/level_builder.gd" id="2_level"]
+[ext_resource type="Script" path="res://scripts/interactable.gd" id="3_inter"]
+[ext_resource type="Script" path="res://scripts/character_visual.gd" id="4_vis"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="5_player"]
+[ext_resource type="Script" path="res://scripts/camera_rig.gd" id="6_cam"]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="7_ui"]
+[ext_resource type="Script" path="res://scripts/passive_zone.gd" id="8_passive"]
+[ext_resource type="Shader" path="res://shaders/painterly.gdshader" id="9_paint"]
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 1
+background_color = Color(0.11, 0.13, 0.15, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.36, 0.42, 0.5, 1)
+ambient_light_energy = 0.55
+tonemap_mode = 2
+tonemap_exposure = 1.05
+glow_enabled = true
+glow_intensity = 0.9
+glow_strength = 1.1
+glow_bloom = 0.05
+glow_blend_mode = 1
+glow_hdr_threshold = 0.85
+fog_enabled = true
+fog_light_color = Color(0.25, 0.3, 0.35, 1)
+fog_light_energy = 1.0
+fog_density = 0.004
+fog_height = -0.2
+fog_height_density = 0.25
+adjustment_enabled = true
+adjustment_brightness = 1.0
+adjustment_contrast = 1.08
+adjustment_saturation = 0.88
+
+[sub_resource type="NavigationMesh" id="NavMesh"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+
+[sub_resource type="CapsuleShape3D" id="NpcShape"]
+radius = 0.38
+height = 1.9
+
+[sub_resource type="BoxShape3D" id="PhoneShape"]
+size = Vector3(1.45, 2.8, 1.45)
+
+[sub_resource type="BoxShape3D" id="PuddleShape"]
+size = Vector3(1.7, 0.08, 1.2)
+
+[sub_resource type="BoxShape3D" id="CratesShape"]
+size = Vector3(2.6, 2.0, 2.4)
+
+[sub_resource type="BoxShape3D" id="LampShape"]
+size = Vector3(0.6, 4.4, 0.6)
+
+[sub_resource type="BoxShape3D" id="DoorShape"]
+size = Vector3(1.9, 2.9, 0.5)
+
+[sub_resource type="BoxShape3D" id="BenchShape"]
+size = Vector3(2.2, 1.1, 0.8)
+
+[sub_resource type="BoxShape3D" id="ZoneBox"]
+size = Vector3(3.2, 2, 2.2)
+
+[sub_resource type="SphereShape3D" id="ZoneSphere"]
+radius = 2.6
+
+[sub_resource type="CapsuleShape3D" id="PlayerShape"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="ShaderMaterial" id="PaintMat"]
+shader = ExtResource("9_paint")
+shader_parameter/radius = 3
+shader_parameter/brush_jitter = 1.6
+shader_parameter/outline_strength = 0.35
+shader_parameter/saturation = 0.92
+shader_parameter/shadow_tint = Color(0.1, 0.17, 0.2, 1)
+shader_parameter/highlight_tint = Color(1, 0.93, 0.8, 1)
+shader_parameter/canvas_grain = 0.07
+shader_parameter/vignette = 0.75
+
+[sub_resource type="StandardMaterial3D" id="RainMat"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.75, 0.82, 0.9, 0.28)
+
+[sub_resource type="BoxMesh" id="RainDrop"]
+material = SubResource("RainMat")
+size = Vector3(0.012, 0.55, 0.012)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.573576, 0, 0.819152, 0.50432, 0.788011, 0.353129, -0.645501, 0.615661, -0.451984, 0, 12, 0)
+light_color = Color(0.62, 0.72, 0.88, 1)
+light_energy = 0.65
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_blur = 1.5
+directional_shadow_max_distance = 80.0
+
+[node name="NavRegion" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavMesh")
+
+[node name="Level" type="Node3D" parent="NavRegion"]
+script = ExtResource("2_level")
+
+[node name="Interactables" type="Node3D" parent="NavRegion"]
+
+[node name="Anchor" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0, -4.3)
+collision_layer = 3
+script = ExtResource("3_inter")
+display_name = "老码头工"
+alt_name = "锚叔"
+name_flag = "anchor_named"
+dialogue_id = "anchor_start"
+interact_distance = 1.6
+marker_height = 2.35
+turn_to_player = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Anchor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("NpcShape")
+
+[node name="Visual" type="Node3D" parent="NavRegion/Interactables/Anchor"]
+transform = Transform3D(-0.479, 0, 0.878, 0, 1, 0, -0.878, 0, -0.479, 0, 0, 0)
+script = ExtResource("4_vis")
+coat_color = Color(0.72, 0.36, 0.12, 1)
+pants_color = Color(0.17, 0.2, 0.24, 1)
+skin_color = Color(0.74, 0.55, 0.44, 1)
+hair_color = Color(0.62, 0.6, 0.58, 1)
+has_hat = true
+hat_color = Color(0.2, 0.25, 0.3, 1)
+body_scale = 0.97
+stoop = 0.18
+
+[node name="PhoneBooth" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -8.5, 1.4, -7.5)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "电话亭"
+dialogue_id = "phone_start"
+interact_distance = 1.7
+marker_height = 3.2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/PhoneBooth"]
+shape = SubResource("PhoneShape")
+
+[node name="Puddle" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.04, -1.5)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "积水"
+dialogue_id = "puddle_start"
+interact_distance = 1.3
+marker_height = 0.6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Puddle"]
+shape = SubResource("PuddleShape")
+
+[node name="Crates" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, 1, -0.1)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "一堆木箱"
+dialogue_id = "crates_start"
+interact_distance = 2.0
+marker_height = 2.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Crates"]
+shape = SubResource("CratesShape")
+
+[node name="Lamp" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.2, -3)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "路灯"
+dialogue_id = "lamp_start"
+interact_distance = 1.4
+marker_height = 4.6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Lamp"]
+shape = SubResource("LampShape")
+
+[node name="HotelDoor" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -10.85)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "维斯珀旅馆大门"
+dialogue_id = "hotel_start"
+interact_distance = 1.9
+marker_height = 3.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/HotelDoor"]
+shape = SubResource("DoorShape")
+
+[node name="Bench" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0.5, 0.35)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "长椅"
+dialogue_id = "bench_start"
+interact_distance = 1.5
+marker_height = 1.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Bench"]
+shape = SubResource("BenchShape")
+
+[node name="PassiveZones" type="Node3D" parent="."]
+
+[node name="PierSmell" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 1, 4.8)
+script = ExtResource("8_passive")
+skill = "perception"
+difficulty = 6
+text = "海水闻起来像柴油、海藻，和一枚压在舌头底下的旧硬币。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PierSmell"]
+shape = SubResource("ZoneBox")
+
+[node name="Lighthouse" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 1, 11.8)
+script = ExtResource("8_passive")
+skill = "hunch"
+difficulty = 8
+text = "远处的灯塔是黑的。已经三天没有人去点亮它了。它在等一个人——也许是你，也许是一条船。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/Lighthouse"]
+shape = SubResource("ZoneBox")
+
+[node name="PhoneHush" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1, -6.2)
+script = ExtResource("8_passive")
+skill = "empathy"
+difficulty = 9
+text = "你走近时，电话亭安静了下来——像一个刚哭过、正假装什么都没发生的人。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PhoneHush"]
+shape = SubResource("ZoneSphere")
+
+[node name="FireWarmth" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1, -3.6)
+script = ExtResource("8_passive")
+skill = "craving"
+difficulty = 7
+text = "火。暖和。如果再有一杯酒，这个早晨几乎可以算是完美的。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/FireWarmth"]
+shape = SubResource("ZoneSphere")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.3, 0, 1.45)
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("5_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("PlayerShape")
+
+[node name="Visual" type="Node3D" parent="Player"]
+script = ExtResource("4_vis")
+coat_color = Color(0.27, 0.3, 0.22, 1)
+pants_color = Color(0.13, 0.12, 0.14, 1)
+skin_color = Color(0.82, 0.64, 0.53, 1)
+hair_color = Color(0.25, 0.16, 0.1, 1)
+has_scarf = true
+scarf_color = Color(0.5, 0.13, 0.1, 1)
+body_scale = 1.05
+stoop = 0.06
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("6_cam")
+target_path = NodePath("../Player")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+projection = 1
+current = true
+size = 13.0
+near = 0.5
+far = 200.0
+
+[node name="Rain" type="CPUParticles3D" parent="CameraRig"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 0)
+amount = 1400
+lifetime = 0.75
+preprocess = 1.0
+local_coords = false
+mesh = SubResource("RainDrop")
+emission_shape = 3
+emission_box_extents = Vector3(20, 0.5, 20)
+particle_flag_align_y = true
+direction = Vector3(0.12, -1, 0.06)
+spread = 2.0
+gravity = Vector3(0, -12, 0)
+initial_velocity_min = 13.0
+initial_velocity_max = 16.0
+
+[node name="PostFX" type="CanvasLayer" parent="."]
+
+[node name="Painterly" type="ColorRect" parent="PostFX"]
+material = SubResource("PaintMat")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 2
+script = ExtResource("7_ui")
