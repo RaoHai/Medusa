@@ -1,7 +1,7 @@
 // 全屏油画后处理：Kuwahara 滤波（笔触色块）+ 笔触扰动 + 墨线 + 色调分级 + 画布纹理 + 暗角
 shader_type canvas_item;
 
-uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
 uniform int radius : hint_range(0, 6) = 3;
 uniform float brush_jitter : hint_range(0.0, 4.0) = 1.6;
 uniform float outline_strength : hint_range(0.0, 1.0) = 0.35;

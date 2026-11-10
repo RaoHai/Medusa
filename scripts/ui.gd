@@ -4,6 +4,7 @@ extends CanvasLayer
 signal dialogue_finished
 
 const DialoguePanel := preload("res://scripts/dialogue_panel.gd")
+const Fonts := preload("res://scripts/fonts.gd")
 
 const COL_TEXT := Color("d8cfc0")
 const COL_DIM := Color("8a8175")
@@ -166,10 +167,9 @@ func _place(c: Control, anchors: Vector4, offsets: Vector4) -> void:
 
 func _make_theme() -> Theme:
 	var t := Theme.new()
-	var f := SystemFont.new()
-	f.font_names = PackedStringArray(["Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", "WenQuanYi Zen Hei"])
-	f.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
-	t.default_font = f
+	t.default_font = Fonts.make(500)
+	t.set_font("bold_font", "RichTextLabel", Fonts.make(800))
+	t.set_font("italics_font", "RichTextLabel", Fonts.make(400, 0.18))
 	t.default_font_size = 18
 	t.set_color("font_color", "Label", COL_TEXT)
 	t.set_color("default_color", "RichTextLabel", COL_TEXT)

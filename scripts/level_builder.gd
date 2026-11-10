@@ -8,6 +8,7 @@ extends Node3D
 const PAINTED := preload("res://shaders/painted.gdshader")
 const COBBLES := preload("res://shaders/cobbles.gdshader")
 const WATER := preload("res://shaders/water.gdshader")
+const Fonts := preload("res://scripts/fonts.gd")
 
 ## 在检查器里勾选即可重建
 @export var rebuild := false:
@@ -21,7 +22,7 @@ var _lamp_light: OmniLight3D
 var _neon: Array[Node3D] = []
 var _neon_light: OmniLight3D
 var _boat: Node3D
-var _cjk_font: SystemFont
+var _cjk_font: Font
 
 
 func _ready() -> void:
@@ -33,8 +34,7 @@ func build() -> void:
 		remove_child(c)
 		c.queue_free()
 	_neon.clear()
-	_cjk_font = SystemFont.new()
-	_cjk_font.font_names = PackedStringArray(["Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", "WenQuanYi Zen Hei"])
+	_cjk_font = Fonts.make(800)
 
 	_build_ground()
 	_build_water()

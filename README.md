@@ -11,6 +11,19 @@
 
 项目使用 **Compatibility（OpenGL）** 渲染器，集显/老显卡也能跑。
 
+在线试玩（Web 导出）：https://claude.ai/artifact/9b4rjffxiJbd3i3o6yM6cM
+
+### 导出 Web 版
+
+仓库里带了 `export_presets.cfg`（Web，无线程版，不需要 COOP/COEP 头）。安装好 4.3 的导出模板后：
+
+```
+godot --headless --path . --export-release Web build/web/index.html
+```
+
+中文显示用的是随项目打包的 `fonts/NotoSerifSC-subset.ttf`（思源宋体的子集，含 ASCII、常用标点和 GB2312 一级常用字，OFL 许可），
+所以浏览器里不依赖系统字体；桌面端缺字时会回退到系统字体。
+
 ## 操作
 
 | 操作 | 说明 |
@@ -59,6 +72,7 @@ scripts/
   passive_zone.gd           走入即触发的被动技能检定
   character_visual.gd       @tool：几何体拼出的风格化人物 + 走路动画
   level_builder.gd          @tool：程序化搭建整个港口场景（编辑器里也可见）
+  fonts.gd                  打包字体 + 系统字体回退，按字重生成字体变体
 shaders/                    上面提到的四个着色器
 ```
 
