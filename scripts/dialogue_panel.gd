@@ -5,6 +5,7 @@ extends PanelContainer
 signal finished
 
 const DB := preload("res://scripts/dialogue_db.gd")
+const PANEL_SHADER := preload("res://shaders/panel.gdshader")
 
 const COL_TEXT := Color("d8cfc0")
 const COL_NARRATION := Color("a89f92")
@@ -274,17 +275,22 @@ func _gui_input(event: InputEvent) -> void:
 # ---------------------------------------------------------------- 布局
 func _build() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.045, 0.042, 0.04, 0.94)
-	sb.border_width_left = 2
-	sb.border_color = Color(0.36, 0.29, 0.2)
-	sb.content_margin_left = 34
+	var sb := StyleBoxEmpty.new()
+	sb.content_margin_left = 44
 	sb.content_margin_right = 30
 	sb.content_margin_top = 30
 	sb.content_margin_bottom = 26
-	sb.shadow_color = Color(0, 0, 0, 0.5)
-	sb.shadow_size = 24
 	add_theme_stylebox_override("panel", sb)
+	# 底色用着色器画（笔刷痕 + 毛糙的左缘），每次容器重排后铺满整个面板
+	var bg := ColorRect.new()
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var bgm := ShaderMaterial.new()
+	bgm.shader = PANEL_SHADER
+	bg.material = bgm
+	add_child(bg)
+	sort_children.connect(func():
+		bg.position = Vector2.ZERO
+		bg.size = size)
 
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 12)

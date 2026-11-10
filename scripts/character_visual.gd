@@ -146,6 +146,9 @@ func _mat(c: Color, rough := 0.85) -> ShaderMaterial:
 	m.set_shader_parameter("noise_scale", 6.0)
 	m.set_shader_parameter("grime", 0.0)
 	m.set_shader_parameter("variation", 0.15)
+	# 一点自发光补光，让人物在暗处也能从背景里读出来
+	m.set_shader_parameter("emission", c)
+	m.set_shader_parameter("emission_energy", 0.22)
 	return m
 
 

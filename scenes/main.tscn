@@ -14,8 +14,8 @@
 background_mode = 1
 background_color = Color(0.11, 0.13, 0.15, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.36, 0.42, 0.5, 1)
-ambient_light_energy = 0.55
+ambient_light_color = Color(0.2, 0.42, 0.46, 1)
+ambient_light_energy = 0.7
 tonemap_mode = 2
 tonemap_exposure = 1.05
 glow_enabled = true
@@ -25,7 +25,7 @@ glow_bloom = 0.05
 glow_blend_mode = 1
 glow_hdr_threshold = 0.85
 fog_enabled = true
-fog_light_color = Color(0.25, 0.3, 0.35, 1)
+fog_light_color = Color(0.2, 0.3, 0.34, 1)
 fog_light_energy = 1.0
 fog_density = 0.004
 fog_height = -0.2
@@ -33,7 +33,7 @@ fog_height_density = 0.25
 adjustment_enabled = true
 adjustment_brightness = 1.0
 adjustment_contrast = 1.08
-adjustment_saturation = 0.88
+adjustment_saturation = 1.0
 
 [sub_resource type="NavigationMesh" id="NavMesh"]
 geometry_parsed_geometry_type = 1
@@ -77,18 +77,24 @@ height = 1.8
 [sub_resource type="ShaderMaterial" id="PaintMat"]
 shader = ExtResource("9_paint")
 shader_parameter/radius = 3
-shader_parameter/brush_jitter = 1.6
-shader_parameter/outline_strength = 0.35
-shader_parameter/saturation = 0.92
-shader_parameter/shadow_tint = Color(0.1, 0.17, 0.2, 1)
-shader_parameter/highlight_tint = Color(1, 0.93, 0.8, 1)
-shader_parameter/canvas_grain = 0.07
-shader_parameter/vignette = 0.75
+shader_parameter/brush_size = 1.35
+shader_parameter/brush_jitter = 3.0
+shader_parameter/outline_strength = 0.55
+shader_parameter/outline_color = Color(0.06, 0.05, 0.09, 1)
+shader_parameter/saturation = 1.12
+shader_parameter/contrast = 1.08
+shader_parameter/shadow_tint = Color(0.07, 0.2, 0.24, 1)
+shader_parameter/midtone_tint = Color(1, 0.97, 0.94, 1)
+shader_parameter/highlight_tint = Color(1, 0.88, 0.68, 1)
+shader_parameter/color_wash = 0.14
+shader_parameter/impasto = 0.16
+shader_parameter/canvas_grain = 0.08
+shader_parameter/vignette = 0.6
 
 [sub_resource type="StandardMaterial3D" id="RainMat"]
 shading_mode = 0
 transparency = 1
-albedo_color = Color(0.75, 0.82, 0.9, 0.28)
+albedo_color = Color(0.75, 0.82, 0.9, 0.16)
 
 [sub_resource type="BoxMesh" id="RainDrop"]
 material = SubResource("RainMat")
@@ -100,14 +106,19 @@ script = ExtResource("1_main")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.573576, 0, 0.819152, 0.50432, 0.788011, 0.353129, -0.645501, 0.615661, -0.451984, 0, 12, 0)
-light_color = Color(0.62, 0.72, 0.88, 1)
-light_energy = 0.65
+[node name="DawnKey" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.330350, 0.000000, -0.943858, -0.419076, 0.896025, -0.146677, 0.845721, 0.444003, 0.296002, 0, 12, 0)
+light_color = Color(1, 0.6, 0.4, 1)
+light_energy = 0.8
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 1.5
 directional_shadow_max_distance = 80.0
+
+[node name="CoolFill" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.982872, -0.000000, 0.184289, 0.109350, 0.804936, -0.583199, -0.148340, 0.593362, 0.791149, 0, 12, 0)
+light_color = Color(0.4, 0.58, 0.85, 1)
+light_energy = 0.4
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavMesh")

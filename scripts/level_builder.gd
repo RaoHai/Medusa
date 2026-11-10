@@ -8,6 +8,7 @@ extends Node3D
 const PAINTED := preload("res://shaders/painted.gdshader")
 const COBBLES := preload("res://shaders/cobbles.gdshader")
 const WATER := preload("res://shaders/water.gdshader")
+const LIGHT_CONE := preload("res://shaders/light_cone.gdshader")
 const Fonts := preload("res://scripts/fonts.gd")
 
 ## 在检查器里勾选即可重建
@@ -50,6 +51,9 @@ func build() -> void:
 	_build_boat(Vector3(5.7, -0.45, 10.5))
 	_build_lighthouse(Vector3(-24, -0.6, 15))
 	_build_wires()
+	_build_rails()
+	_build_posters()
+	_build_skyline()
 
 
 func _process(delta: float) -> void:
@@ -132,17 +136,17 @@ func _build_pier() -> void:
 
 func _build_buildings() -> void:
 	# 背面一排（正面朝 +Z，位于 z=-11）
-	_facade_block(Vector3(-11, 0, -16), Vector3(-4, 8.0, -11), Color(0.42, 0.35, 0.26), "z", [
+	_facade_block(Vector3(-11, 0, -16), Vector3(-4, 8.0, -11), Color(0.56, 0.41, 0.20), "z", [
 		Vector2(-9.5, 2.6), Vector2(-7.0, 2.6), Vector2(-9.5, 5.4), Vector2(-7.0, 5.4), Vector2(-5.2, 5.4),
 	], [1, 3])
-	_facade_block(Vector3(-4, 0, -16), Vector3(4, 9.5, -11), Color(0.22, 0.30, 0.29), "z", [
+	_facade_block(Vector3(-4, 0, -16), Vector3(4, 9.5, -11), Color(0.15, 0.34, 0.33), "z", [
 		Vector2(-2.6, 4.4), Vector2(2.6, 4.4), Vector2(-2.6, 7.0), Vector2(0.0, 7.0), Vector2(2.6, 7.0),
 	], [0, 4])
-	_facade_block(Vector3(4, 0, -16), Vector3(10, 6.0, -11), Color(0.34, 0.19, 0.15), "z", [
+	_facade_block(Vector3(4, 0, -16), Vector3(10, 6.0, -11), Color(0.47, 0.20, 0.15), "z", [
 		Vector2(5.2, 4.6), Vector2(8.8, 4.6),
 	], [])
 	# 左侧一排（正面朝 +X，位于 x=-11）
-	_facade_block(Vector3(-16, 0, -11), Vector3(-11, 7.0, 4), Color(0.30, 0.31, 0.26), "x", [
+	_facade_block(Vector3(-16, 0, -11), Vector3(-11, 7.0, 4), Color(0.44, 0.29, 0.30), "x", [
 		Vector2(-9.0, 2.5), Vector2(-4.5, 2.5), Vector2(-1.5, 2.5), Vector2(1.8, 2.5),
 		Vector2(-9.0, 5.2), Vector2(-6.0, 5.2), Vector2(-3.0, 5.2), Vector2(0.0, 5.2), Vector2(2.6, 5.2),
 	], [2, 6])
@@ -178,6 +182,7 @@ func _build_buildings() -> void:
 	add_child(sign2)
 	_neon.append(sign2)
 	_neon_light = _omni(Vector3(0, 3.6, -9.8), Color(1.0, 0.4, 0.6), 1.6, 5.5, false)
+	_light_cone(Vector3(0, 2.3, -10.6), 2.3, 1.5, Color(1.0, 0.7, 0.4), 0.14)
 
 	# 仓库卷帘门
 	var shutter := _box(Vector3(3.4, 3.6, 0.1), Vector3(7, 1.8, -10.95), Color(0.30, 0.31, 0.30), false)
@@ -238,6 +243,7 @@ func _build_lamp(p: Vector3) -> void:
 	var head := _box(Vector3(0.36, 0.42, 0.36), p + Vector3(0, 3.85, 0.62), iron, false)
 	_box(Vector3(0.28, 0.3, 0.28), Vector3(0, -0.06, 0), Color.BLACK, false, 0.0, _mat(Color(0.4, 0.3, 0.15), 0.3, Color(1.0, 0.78, 0.45), 4.0), head)
 	_lamp_light = _omni(p + Vector3(0, 3.5, 0.62), Color(1.0, 0.76, 0.48), 2.2, 10.0, true)
+	_light_cone(p + Vector3(0, 3.65, 0.62), 3.65, 2.4, Color(1.0, 0.78, 0.45), 0.2)
 
 
 func _build_bench(p: Vector3) -> void:
@@ -264,6 +270,7 @@ func _build_fire_barrel(p: Vector3) -> void:
 	_cyl(0.395, 0.395, 0.05, p + Vector3(0, 0.75, 0), rust * 0.6, false)
 	var embers := _cyl(0.34, 0.34, 0.04, p + Vector3(0, 0.9, 0), Color.BLACK, false)
 	embers.material_override = _mat(Color(0.2, 0.05, 0.0), 0.9, Color(1.0, 0.35, 0.08), 3.0)
+	embers.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# 火焰粒子
 	var fire := CPUParticles3D.new()
 	fire.position = p + Vector3(0, 0.95, 0)
@@ -300,6 +307,7 @@ func _build_fire_barrel(p: Vector3) -> void:
 	fm.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	q.material = fm
 	fire.mesh = q
+	fire.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(fire)
 	_fire_light = _omni(p + Vector3(0, 1.4, 0), Color(1.0, 0.5, 0.2), 2.6, 7.0, true)
 
@@ -432,6 +440,17 @@ func _build_wires() -> void:
 			mi.material_override = _mat(Color(0.05, 0.05, 0.05), 0.9)
 			add_child(mi)
 			mi.look_at_from_position((p0 + p1) * 0.5, p1, Vector3.UP)
+			# 晾在电线上的衣物：给画面一点跳色
+			if i == 0 and s >= 2 and s <= 6:
+				var cloth_cols := [Color(0.62, 0.20, 0.16), Color(0.78, 0.62, 0.22), Color(0.72, 0.70, 0.62), Color(0.18, 0.42, 0.44), Color(0.55, 0.30, 0.42)]
+				var cloth := MeshInstance3D.new()
+				var cm := BoxMesh.new()
+				cm.size = Vector3(0.02, 0.55 + 0.25 * fposmod(s * 0.37, 1.0), 0.62)
+				cloth.mesh = cm
+				cloth.material_override = _mat(cloth_cols[(s - 2) % cloth_cols.size()], 0.9)
+				cloth.position = Vector3(0, -cm.size.y * 0.5 - 0.02, 0)
+				cloth.rotation.z = 0.06 * sin(s * 2.1)
+				mi.add_child(cloth)
 
 
 # ================================================================ 工具函数
@@ -511,3 +530,75 @@ func _omni(pos: Vector3, color: Color, energy: float, rng: float, shadow: bool) 
 	l.shadow_enabled = shadow
 	add_child(l)
 	return l
+
+
+func _light_cone(top: Vector3, height: float, radius: float, color: Color, strength: float) -> void:
+	var m := CylinderMesh.new()
+	m.top_radius = 0.12
+	m.bottom_radius = radius
+	m.height = height
+	m.radial_segments = 24
+	m.rings = 1
+	m.cap_top = false
+	m.cap_bottom = false
+	var mat := ShaderMaterial.new()
+	mat.shader = LIGHT_CONE
+	mat.set_shader_parameter("color", color)
+	mat.set_shader_parameter("strength", strength)
+	var mi := MeshInstance3D.new()
+	mi.mesh = m
+	mi.material_override = mat
+	mi.position = top - Vector3(0, height * 0.5, 0)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+
+
+func _build_rails() -> void:
+	# 废弃的有轨电车轨道：两条会反光的金属线
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.36, 0.38, 0.40)
+	m.metallic = 0.9
+	m.roughness = 0.22
+	for z in [-9.7, -8.7]:
+		_box(Vector3(21.0, 0.03, 0.07), Vector3(-0.5, 0.012, z), Color.GRAY, false, 0.0, m)
+		_box(Vector3(21.0, 0.012, 0.3), Vector3(-0.5, 0.004, z), Color(0.08, 0.08, 0.09), false)
+
+
+func _build_posters() -> void:
+	# 墙上的旧海报 / 告示：小面积的高饱和色块
+	var cols := [Color(0.74, 0.57, 0.18), Color(0.63, 0.17, 0.13), Color(0.70, 0.67, 0.58), Color(0.16, 0.40, 0.45), Color(0.60, 0.33, 0.45)]
+	var back := [[-9.9, 1.75, 0], [-9.2, 1.6, 1], [-6.2, 1.7, 3], [-2.6, 1.7, 2], [2.4, 1.65, 1], [3.1, 1.8, 4], [5.0, 1.6, 0]]
+	for b in back:
+		var p := _box(Vector3(0.6, 0.85, 0.02), Vector3(b[0], b[1], -10.9), cols[b[2]], false)
+		p.rotation.z = sin(b[0] * 3.7) * 0.07
+		_box(Vector3(0.44, 0.1, 0.025), Vector3(b[0], b[1] + 0.25, -10.895), cols[b[2]] * 0.45, false).rotation.z = p.rotation.z
+	var left := [[-8.2, 1.7, 1], [-7.5, 1.6, 2], [-3.2, 1.75, 3], [0.6, 1.65, 0], [1.3, 1.8, 4]]
+	for b in left:
+		var p := _box(Vector3(0.02, 0.85, 0.6), Vector3(-10.9, b[1], b[0]), cols[b[2]], false)
+		p.rotation.x = sin(b[0] * 2.9) * 0.07
+	# 仓库墙上刷的大号编号
+	var num := Label3D.new()
+	num.font = _cjk_font
+	num.text = "7"
+	num.font_size = 400
+	num.pixel_size = 0.006
+	num.modulate = Color(0.82, 0.76, 0.62, 0.75)
+	num.position = Vector3(9.2, 2.6, -10.94)
+	add_child(num)
+
+
+func _build_skyline() -> void:
+	# 海湾对岸的城市剪影
+	var x := -36.0
+	var z := -6.0
+	var i := 0
+	while z < 40.0:
+		var w := 3.0 + 3.0 * fposmod(sin(i * 12.9898) * 43758.5453, 1.0)
+		var h := 3.0 + 7.0 * fposmod(sin(i * 78.233) * 12345.678, 1.0)
+		var col := Color(0.10, 0.13, 0.20).lerp(Color(0.20, 0.14, 0.22), fposmod(i * 0.37, 1.0))
+		_box(Vector3(5.0, h, w), Vector3(x - fposmod(i * 0.61, 1.0) * 3.0, h * 0.5 - 0.6, z + w * 0.5), col, false)
+		if i % 2 == 0:
+			var win := _box(Vector3(0.05, 0.5, 0.4), Vector3(x + 2.55, h * 0.6, z + w * 0.4), Color.BLACK, false)
+			win.material_override = _mat(Color(0.3, 0.2, 0.1), 0.4, Color(1.0, 0.7, 0.35), 2.5)
+		z += w + 0.4
+		i += 1
