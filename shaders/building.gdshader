@@ -7,8 +7,8 @@ uniform vec3 size = vec3(10.0, 6.0, 4.0);
 uniform vec4 wall_color : source_color = vec4(0.72, 0.70, 0.68, 1.0);
 uniform vec4 stripe_color : source_color = vec4(0.16, 0.30, 0.62, 1.0);
 uniform float stripe_amount : hint_range(0.0, 1.0) = 0.0;
-uniform float floor_height = 1.8;
-uniform float bay_width = 1.6;
+uniform float floor_height = 2.9;
+uniform float bay_width = 3.2;
 uniform float lit_ratio : hint_range(0.0, 1.0) = 0.15;
 uniform float seed = 0.0;
 // 1 = 废墟：窗洞是空的，墙面剥落
@@ -29,12 +29,12 @@ varying vec3 lnorm;
 varying vec3 wpos;
 // 人物被挡住时的镂空：相机始终对着人物（见 camera_rig.gd），所以人物在视图空间里
 // 位于 (0, 0, -camera_distance)。片元比人物离相机近、且落在画面中心附近时，按抖动图案丢弃。
-uniform float camera_distance = 90.0;
+uniform float camera_distance = 220.0;
 varying vec3 vpos_view;
 // 极夜的雾：离画面中心（也就是人物）越远，越沉进蓝灰色的雾里
 uniform vec3 fog_color : source_color = vec3(0.075, 0.09, 0.115);
-uniform float fog_start = 12.0;
-uniform float fog_end = 46.0;
+uniform float fog_start = 28.0;
+uniform float fog_end = 125.0;
 uniform float fog_max : hint_range(0.0, 1.0) = 0.96;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -61,8 +61,8 @@ void vertex() {
 void fragment() {
 	{
 		float ahead = vpos_view.z + camera_distance;
-		float d = length(vpos_view.xy - vec2(0.0, 0.6));
-		float cut = (1.0 - smoothstep(3.0, 5.5, d)) * smoothstep(1.2, 2.5, ahead);
+		float d = length(vpos_view.xy - vec2(0.0, 0.8));
+		float cut = (1.0 - smoothstep(4.0, 8.0, d)) * smoothstep(1.2, 2.5, ahead);
 		float dither = fract(dot(floor(FRAGCOORD.xy), vec2(0.7548777, 0.5698403)));
 		if (cut > dither * 0.9 + 0.1) {
 			discard;
@@ -109,7 +109,7 @@ void fragment() {
 
 		// 窗洞（离两端留出半个开间）
 		float in_len = step(abs(u), face_len * 0.5 - bay_width * 0.35);
-		float in_h = step(v, size.y - 0.15);
+		float in_h = step(v, size.y - 0.25);
 		float win = step(0.25, fu) * step(fu, 0.75) * step(0.28, fv) * step(fv, 0.78) * in_len * in_h * windows;
 		if (win > 0.5) {
 			vec2 id = vec2(floor(u / bay_width + 0.5), fl) + face_id * 17.0 + seed;
@@ -138,8 +138,8 @@ void fragment() {
 		c = mix(c, vec3(0.92, 0.94, 0.99), sill);
 
 		// 墙根的雪堆、檐下和墙面的霜
-		float base = 1.0 - smoothstep(0.15, 0.7 + 0.5 * vnoise(vec2(u * 0.8, seed)), v);
-		float top = smoothstep(size.y - 0.9, size.y, v) * vnoise(vec2(u * 1.7, seed + 4.0));
+		float base = 1.0 - smoothstep(0.2, 1.1 + 0.8 * vnoise(vec2(u * 0.4, seed)), v);
+		float top = smoothstep(size.y - 1.4, size.y, v) * vnoise(vec2(u * 1.7, seed + 4.0));
 		float rime = smoothstep(0.62, 0.8, vnoise(vec2(u * 0.6, v * 0.9) + seed * 2.0)) * 0.6;
 		float fr = clamp(base + (top + rime) * frost, 0.0, 1.0) * (1.0 - step(0.5, win) * 0.8);
 		c = mix(c, vec3(0.88, 0.91, 0.98), fr * frost + base * (1.0 - frost));

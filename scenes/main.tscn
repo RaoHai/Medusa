@@ -14,8 +14,8 @@
 background_mode = 1
 background_color = Color(0.075, 0.09, 0.115, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.24, 0.29, 0.38, 1)
-ambient_light_energy = 0.5
+ambient_light_color = Color(0.26, 0.31, 0.4, 1)
+ambient_light_energy = 0.8
 tonemap_mode = 2
 tonemap_exposure = 1.0
 glow_enabled = true
@@ -58,7 +58,7 @@ size = Vector3(2.8, 2.2, 2.6)
 size = Vector3(0.7, 5.4, 0.7)
 
 [sub_resource type="BoxShape3D" id="DoorShape"]
-size = Vector3(2.2, 2.9, 1.6)
+size = Vector3(3.0, 3.8, 3.4)
 
 [sub_resource type="BoxShape3D" id="BenchShape"]
 size = Vector3(3.6, 1.1, 1.0)
@@ -67,19 +67,19 @@ size = Vector3(3.6, 1.1, 1.0)
 size = Vector3(2.7, 1.8, 0.5)
 
 [sub_resource type="BoxShape3D" id="BillboardShape"]
-size = Vector3(0.7, 3.9, 4.7)
+size = Vector3(1.2, 6.4, 7.6)
 
 [sub_resource type="BoxShape3D" id="MonumentShape"]
-size = Vector3(3.4, 4.2, 3.4)
+size = Vector3(7.0, 8.4, 7.0)
 
 [sub_resource type="BoxShape3D" id="WalkerShape"]
-size = Vector3(9.5, 6.0, 8.0)
+size = Vector3(17.0, 11.0, 14.5)
 
 [sub_resource type="BoxShape3D" id="ZoneBox"]
-size = Vector3(4.0, 2, 4.0)
+size = Vector3(12.0, 2, 8.0)
 
 [sub_resource type="SphereShape3D" id="ZoneSphere"]
-radius = 2.8
+radius = 4.5
 
 [sub_resource type="CapsuleShape3D" id="PlayerShape"]
 radius = 0.3
@@ -109,8 +109,8 @@ albedo_color = Color(0.75, 0.82, 0.95, 0.4)
 
 [sub_resource type="SphereMesh" id="SnowFlake"]
 material = SubResource("SnowMat")
-radius = 0.04
-height = 0.08
+radius = 0.05
+height = 0.1
 radial_segments = 6
 rings = 3
 
@@ -123,11 +123,11 @@ environment = SubResource("Env")
 [node name="SkyGlow" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.265156, 0.000000, -0.964205, -0.365612, 0.925321, -0.100543, 0.892199, 0.379185, 0.245355, 0, 12, 0)
 light_color = Color(0.5, 0.58, 0.75, 1)
-light_energy = 0.3
+light_energy = 0.45
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 1.5
-directional_shadow_max_distance = 90.0
+directional_shadow_max_distance = 320.0
 
 [node name="SkyFill" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.982872, -0.000000, 0.184289, 0.109350, 0.804936, -0.583199, -0.148340, 0.593362, 0.791149, 0, 12, 0)
@@ -143,7 +143,7 @@ script = ExtResource("2_level")
 [node name="Interactables" type="Node3D" parent="NavRegion"]
 
 [node name="Anchor" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1, 0, 4.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.1, 0, 7.7)
 collision_layer = 3
 script = ExtResource("3_inter")
 display_name = "老司炉"
@@ -174,7 +174,7 @@ body_scale = 0.97
 stoop = 0.18
 
 [node name="PhoneBooth" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 21.5, 1.4, -3.3)
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 30, 1.4, -7)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "公用终端亭"
@@ -185,7 +185,7 @@ marker_height = 3.3
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/PhoneBooth"]
 shape = SubResource("PhoneShape")
 [node name="Puddle" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0.04, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.04, 1.2)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "冰面"
@@ -196,7 +196,7 @@ marker_height = 0.6
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Puddle"]
 shape = SubResource("PuddleShape")
 [node name="Crates" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.1, 1.1, -3.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.1, 1.1, -7.6)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "配给箱"
@@ -207,7 +207,7 @@ marker_height = 2.6
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Crates"]
 shape = SubResource("CratesShape")
 [node name="Lamp" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.7, -3.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.7, -6.5)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "广播喇叭"
@@ -218,18 +218,18 @@ marker_height = 5.8
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Lamp"]
 shape = SubResource("LampShape")
 [node name="HotelDoor" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.32, 1.45, -15.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 104, 1.9, -47.6)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "矿工文化宫大门"
 dialogue_id = "hotel_start"
-interact_distance = 2.3
-marker_height = 3.2
+interact_distance = 3.4
+marker_height = 5.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/HotelDoor"]
 shape = SubResource("DoorShape")
 [node name="Bench" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.55, -4.25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0.55, -8.85)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "候车亭长椅"
@@ -240,7 +240,7 @@ marker_height = 1.6
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Bench"]
 shape = SubResource("BenchShape")
 [node name="Board" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0, 1.5, 3.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1.5, 7.5)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "建筑编号索引牌"
@@ -251,35 +251,35 @@ marker_height = 2.9
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Board"]
 shape = SubResource("BoardShape")
 [node name="Billboard" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 2.2, -9.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 3.5, -18)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "宣传牌"
 dialogue_id = "billboard_start"
-interact_distance = 2.2
-marker_height = 4.4
+interact_distance = 3.6
+marker_height = 7.2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Billboard"]
 shape = SubResource("BillboardShape")
 [node name="Monument" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -24)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, -70)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "纪念碑"
 dialogue_id = "monument_start"
-interact_distance = 3.6
-marker_height = 5.2
+interact_distance = 7.4
+marker_height = 11.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Monument"]
 shape = SubResource("MonumentShape")
 [node name="Walker" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(0.877583, 0, -0.479426, 0, 1, 0, 0.479426, 0, 0.877583, -9, 3.0, -118)
+transform = Transform3D(0.877583, 0, -0.479426, 0, 1, 0, 0.479426, 0, 0.877583, -22, 5.4, -330)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "步行掘进机"
 dialogue_id = "walker_start"
-interact_distance = 7.0
-marker_height = 8.6
+interact_distance = 13.0
+marker_height = 15.5
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Walker"]
 shape = SubResource("WalkerShape")
@@ -287,7 +287,7 @@ shape = SubResource("WalkerShape")
 [node name="PassiveZones" type="Node3D" parent="."]
 
 [node name="Ruins" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1, 7.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1, 22)
 script = ExtResource("8_passive")
 skill = "empathy"
 difficulty = 7
@@ -296,7 +296,7 @@ text = "这些楼没有屋顶。雪直接下进了卧室，落在别人留下的
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/Ruins"]
 shape = SubResource("ZoneSphere")
 [node name="FireTracks" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 1, 2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 1, 5.6)
 script = ExtResource("8_passive")
 skill = "perception"
 difficulty = 6
@@ -305,7 +305,7 @@ text = "火桶周围的雪化了一圈。地上有两行脚印：一行是他的
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/FireTracks"]
 shape = SubResource("ZoneSphere")
 [node name="PipeSteam" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, -4.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 1, -11)
 script = ExtResource("8_passive")
 skill = "craving"
 difficulty = 7
@@ -314,7 +314,7 @@ text = "供暖管的接头在漏汽。暖的。如果再有一杯酒，这个极
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PipeSteam"]
 shape = SubResource("ZoneSphere")
 [node name="AvenueNorth" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -120)
 script = ExtResource("8_passive")
 skill = "hunch"
 difficulty = 8
@@ -323,7 +323,7 @@ text = "大街笔直地往北，一直通到烟囱底下。两边的树挂满了
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/AvenueNorth"]
 shape = SubResource("ZoneBox")
 [node name="PlantGate" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -138)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -440)
 script = ExtResource("8_passive")
 skill = "perception"
 difficulty = 6
@@ -333,7 +333,7 @@ text = "汽笛、皮带廊、蒸汽。厂子是这个镇上唯一还在呼吸的
 shape = SubResource("ZoneBox")
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 0, -7.2)
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("5_player")
@@ -359,25 +359,25 @@ stoop = 0.06
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("6_cam")
 target_path = NodePath("../Player")
-zoom = 14.0
-max_zoom = 34.0
+zoom = 22.0
+max_zoom = 80.0
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
 projection = 1
 current = true
-size = 14.0
+size = 22.0
 near = 0.5
-far = 260.0
+far = 700.0
 
 [node name="Snowfall" type="CPUParticles3D" parent="CameraRig"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 12, -1)
-amount = 1100
-lifetime = 4.2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 18, -2)
+amount = 3000
+lifetime = 6.0
 preprocess = 4.0
 local_coords = false
 mesh = SubResource("SnowFlake")
 emission_shape = 3
-emission_box_extents = Vector3(24, 0.5, 24)
+emission_box_extents = Vector3(48, 0.5, 48)
 direction = Vector3(-0.5, -1, 0.25)
 spread = 12.0
 gravity = Vector3(-0.5, -0.4, 0.2)

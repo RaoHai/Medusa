@@ -18,7 +18,10 @@ const Fonts := preload("res://scripts/fonts.gd")
 const Town := preload("res://scripts/town_data.gd")
 const Textures := preload("res://scripts/texture_library.gd")
 
-const FLOOR_H := 1.8
+## 层高（米）。世界是 1 单位 = 1 米的真实比例，人只有 1.8 米高
+const FLOOR_H := 2.9
+## 一个开间的宽度（米），也是立面贴图一格的宽度
+const BAY_W := 3.2
 const RED := Color(0.70, 0.12, 0.09)
 const CREAM := Color(0.86, 0.80, 0.66)
 const RUST := Color(0.45, 0.22, 0.12)
@@ -27,10 +30,10 @@ const SNOW_WHITE := Color(0.90, 0.93, 0.98)
 
 ## 道路中心线（世界坐标 xz）与半宽：中央大街、十字街、去厂区的路、南边的岔路
 const ROADS := [
-	[Vector2(0, -150), Vector2(0, 62), 2.1],
-	[Vector2(-62, 0), Vector2(92, 0), 1.9],
-	[Vector2(0, -150), Vector2(-48, -160), 1.8],
-	[Vector2(0, 62), Vector2(40, 84), 1.6],
+	[Vector2(0, -470), Vector2(0, 180), 4.5],
+	[Vector2(-190, 0), Vector2(280, 0), 4.0],
+	[Vector2(0, -470), Vector2(-110, -482), 4.0],
+	[Vector2(0, 180), Vector2(120, 250), 3.5],
 ]
 
 ## 在检查器里勾选即可重建
@@ -52,6 +55,8 @@ var _ground_mat: ShaderMaterial
 var _cone_mat: ShaderMaterial
 var _lamp_points := PackedVector3Array()
 var _rng := RandomNumberGenerator.new()
+## 当前的“缩放作用域”：非空时，所有辅助函数把东西建在这个节点下面（见 _scaled()）
+var _scope: Node3D
 
 
 func _ready() -> void:
@@ -73,26 +78,27 @@ func build() -> void:
 	_build_ground()
 	_build_town()
 	_build_vegetation()
-	_build_power_plant(Vector3(14, 0, -176))
-	_build_concentrator(Vector3(-52, 0, -172))
-	_build_spoil_heap(Vector3(92, 0, -196))
+	# 厂区的东西照原来的小样放大：厂房百米长，高烟囱一百多米
+	_scaled(Vector3(45, 0, -525), 2.8, 0.0, func(): _build_power_plant(Vector3.ZERO))
+	_scaled(Vector3(-140, 0, -508), 2.8, 0.0, func(): _build_concentrator(Vector3.ZERO))
+	_scaled(Vector3(270, 0, -570), 3.0, 0.0, func(): _build_spoil_heap(Vector3.ZERO))
 	_build_pylons()
-	# 十字街口的布景
-	_build_bus_stop(Vector3(-6, 0, -3.9))
-	_build_loudspeaker(Vector3(2.9, 0, -3.1))
-	_build_fire_barrel(Vector3(9, 0, 3.4))
-	_build_ice_patch(Vector3(3.6, 0, 0.5))
-	_build_ration_crates(Vector3(14, 0, -3.6))
-	_build_map_board(Vector3(-3.0, 0, 3.5))
-	_build_terminal_booth(Vector3(21.5, 0, -3.3))
+	# 十字街口的布景（街道家具是人的尺度）
+	_build_bus_stop(Vector3(-9, 0, -8.5))
+	_build_loudspeaker(Vector3(6.5, 0, -6.5))
+	_build_fire_barrel(Vector3(12, 0, 7))
+	_build_ice_patch(Vector3(5, 0, 1.2))
+	_build_ration_crates(Vector3(20, 0, -7.5))
+	_build_map_board(Vector3(-7, 0, 7.5))
+	_build_terminal_booth(Vector3(30, 0, -7))
 	_build_boiler_house()
 	_build_culture_palace()
 	_build_heating_pipes()
-	_build_monument(Vector3(0, 0, -24))
-	_build_billboard(Vector3(-3.6, 0, -9.5), "计划就是法律", "每一栋楼都有编号\n每一个人都有位置")
-	_build_billboard(Vector3(-3.6, 0, 22), "煤是工业的面包", "第七矿超额完成\n第四季度采掘任务", "poster_2")
-	_build_walker(Vector3(-9, 0, -118))
-	_build_truck(Vector3(-16, 0, 2.6))
+	_scaled(Vector3(0, 0, -70), 2.0, 0.0, func(): _build_monument(Vector3.ZERO))
+	_scaled(Vector3(-9, 0, -18), 1.6, 0.0, func(): _build_billboard(Vector3.ZERO, "计划就是法律", "每一栋楼都有编号\n每一个人都有位置"))
+	_scaled(Vector3(-9, 0, 40), 1.6, 0.0, func(): _build_billboard(Vector3.ZERO, "煤是工业的面包", "第七矿超额完成\n第四季度采掘任务", "poster_2"))
+	_scaled(Vector3(-22, 0, -330), 1.8, 0.0, func(): _build_walker(Vector3.ZERO))
+	_build_truck(Vector3(-22, 0, 6.5))
 	_build_street_lamps()
 	_merge_static()
 
@@ -135,14 +141,14 @@ func _build_ground() -> void:
 	mat.set_shader_parameter("road_count", ROADS.size())
 	_ground_mat = mat
 	# 可行走的雪地（顶面 y=0）
-	_box(Vector3(440, 2.0, 380), Vector3(-65, -1.0, -50), Color.WHITE, true, 0.0, mat)
+	_box(Vector3(1120, 2.0, 1020), Vector3(-210, -1.0, -160), Color.WHITE, true, 0.0, mat)
 	# 远处的苔原，只用来铺满画面
 	var far := MeshInstance3D.new()
 	var pm := PlaneMesh.new()
-	pm.size = Vector2(1400, 1400)
+	pm.size = Vector2(4000, 4000)
 	far.mesh = pm
 	far.material_override = mat
-	far.position = Vector3(-65, -0.05, -50)
+	far.position = Vector3(-210, -0.05, -160)
 	far.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(far)
 
@@ -194,6 +200,7 @@ func _building_mat(size: Vector3, color: Color, sd: float, lit: float, ruined: f
 	m.set_shader_parameter("ruined", ruined)
 	m.set_shader_parameter("frost", frost)
 	m.set_shader_parameter("floor_height", FLOOR_H)
+	m.set_shader_parameter("bay_width", BAY_W)
 	var facade := "facade_ruin" if ruined > 0.5 else ("facade_husk" if lit < 0.02 else "facade_block")
 	Textures.bind_texture(m, "facade_texture", facade)
 	Textures.bind_texture(m, "wall_texture", "plaster_peeling" if ruined > 0.5 else "concrete_panel")
@@ -206,62 +213,64 @@ func _block(root: Node3D, length: float, width: float, floors: int, sd: float, l
 	var h := floors * FLOOR_H
 	var size := Vector3(length, h, width)
 	_box(size, Vector3(0, h * 0.5, 0), color, false, 0.0, _building_mat(size, color, sd, lit, 0.0, frost), root)
-	_box(Vector3(length + 0.3, 0.22, width + 0.3), Vector3(0, h + 0.11, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
-	var n := maxi(1, int(length / 9.0))
+	_box(Vector3(length + 0.6, 0.35, width + 0.6), Vector3(0, h + 0.17, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
+	# 每个单元一个出屋面的楼梯间、一个带雨棚的单元门
+	var n := maxi(1, int(length / 24.0))
 	for i in n:
 		var x := (float(i) + 0.5) / n * length - length * 0.5
-		_box(Vector3(1.2, 0.9, 1.0), Vector3(x, h + 0.6, 0), color * 0.8, false, 0.0, null, root)
-		_box(Vector3(1.4, 0.16, 1.2), Vector3(x, h + 1.12, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
-		_box(Vector3(1.1, 0.1, 0.7), Vector3(x, 1.45, width * 0.5 + 0.3), color * 0.55, false, 0.0, null, root)
-		_box(Vector3(0.7, 1.3, 0.06), Vector3(x, 0.65, width * 0.5 + 0.03), Color(0.20, 0.13, 0.10), false, 0.0, null, root)
-
+		_box(Vector3(3.2, 2.3, 2.6), Vector3(x, h + 1.3, 0), color * 0.8, false, 0.0, null, root)
+		_box(Vector3(3.5, 0.25, 2.9), Vector3(x, h + 2.55, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
+		_box(Vector3(2.6, 0.16, 1.5), Vector3(x, 2.55, width * 0.5 + 0.7), color * 0.55, false, 0.0, null, root)
+		_box(Vector3(2.7, 0.2, 1.6), Vector3(x, 2.72, width * 0.5 + 0.7), SNOW_WHITE, false, 0.0, _snow_mat(), root)
+		_box(Vector3(1.3, 2.1, 0.1), Vector3(x, 1.05, width * 0.5 + 0.05), Color(0.20, 0.13, 0.10), false, 0.0, null, root)
+		_box(Vector3(2.4, 0.3, 1.6), Vector3(x, 0.15, width * 0.5 + 0.8), color * 0.5, false, 0.0, null, root)
 
 ## 无顶废墟：四面外墙 + 内部隔墙 + 灌进来的雪
 func _ruin(root: Node3D, length: float, width: float, floors: int, sd: float) -> void:
 	var h := floors * FLOOR_H
-	var t := 0.32
+	var t := 0.5
 	var color := Color(0.74, 0.72, 0.70)
 	_rng.seed = int(sd) + 7
 	for sz in [-1.0, 1.0]:
 		var size := Vector3(length, h, t)
 		var pos := Vector3(0, h * 0.5, sz * (width * 0.5 - t * 0.5))
 		_box(size, pos, color, false, 0.0, _building_mat(size, color, sd, 0.0, 1.0, 0.8), root)
-		_box(Vector3(length, 0.1, t + 0.12), pos + Vector3(0, h * 0.5 + 0.05, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
+		_box(Vector3(length, 0.18, t + 0.2), pos + Vector3(0, h * 0.5 + 0.09, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
 	for sx in [-1.0, 1.0]:
 		var size := Vector3(t, h, width - t * 2.0)
 		var pos := Vector3(sx * (length * 0.5 - t * 0.5), h * 0.5, 0)
 		_box(size, pos, color, false, 0.0, _building_mat(size, color, sd + 1.0, 0.0, 1.0, 0.8), root)
-		_box(Vector3(t + 0.12, 0.1, width), pos + Vector3(0, h * 0.5 + 0.05, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
+		_box(Vector3(t + 0.2, 0.18, width), pos + Vector3(0, h * 0.5 + 0.09, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
 	var inner := _surface_mat("plaster_peeling", Color(0.62, 0.60, 0.60), Vector2(3, 3))
 	# 横向隔墙，高低不一（塌掉的部分）
-	var n := maxi(2, int(length / 3.4))
+	var n := maxi(2, int(length / 6.4))
 	for i in range(1, n):
 		var x := float(i) / n * length - length * 0.5
 		var ph := h * _rng.randf_range(0.45, 1.0)
 		_box(Vector3(t * 0.8, ph, width - t * 2.0), Vector3(x, ph * 0.5, 0), Color.WHITE, false, 0.0, inner, root)
 		_box(Vector3(t * 0.8 + 0.1, 0.08, width - t * 2.0), Vector3(x, ph + 0.04, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
 	# 纵向的中墙
-	if width > 3.0:
+	if width > 8.0:
 		var sh := h * 0.75
 		_box(Vector3(length - t * 2.0, sh, t * 0.8), Vector3(0, sh * 0.5, 0), Color.WHITE, false, 0.0, inner, root)
 		_box(Vector3(length - t * 2.0, 0.08, t * 0.8 + 0.1), Vector3(0, sh + 0.04, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
 	# 屋里的积雪
-	_box(Vector3(length - t * 2.0, 0.7, width - t * 2.0), Vector3(0, 0.35, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
+	_box(Vector3(length - t * 2.0, 1.1, width - t * 2.0), Vector3(0, 0.55, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
 
 
 func _build_vegetation() -> void:
 	# 挂满雾凇的行道树和灌木：用 MultiMesh，一次绘制
 	var blob := SphereMesh.new()
-	blob.radius = 0.5
-	blob.height = 1.0
+	blob.radius = 1.0
+	blob.height = 2.0
 	blob.radial_segments = 7
 	blob.rings = 4
 	var frost_mat := _mat_new(Color(0.86, 0.88, 0.95), 0.95)
 	frost_mat.set_shader_parameter("grime", 0.0)
 	frost_mat.set_shader_parameter("noise_scale", 3.0)
 	var trunk := CylinderMesh.new()
-	trunk.top_radius = 0.03
-	trunk.bottom_radius = 0.07
+	trunk.top_radius = 0.06
+	trunk.bottom_radius = 0.14
 	trunk.height = 1.0
 	trunk.radial_segments = 5
 	var trunk_mat := _mat(Color(0.22, 0.19, 0.20), 0.9)
@@ -270,20 +279,20 @@ func _build_vegetation() -> void:
 	var trunks: Array[Transform3D] = []
 	_rng.seed = 42
 	# 大街两侧的行道树
-	var z := -148.0
-	while z < 60.0:
+	var z := -462.0
+	while z < 176.0:
 		for side in [-1.0, 1.0]:
-			if absf(z) < 4.5 or absf(z + 24.0) < 4.0 or _rng.randf() < 0.18:
+			if absf(z) < 14.0 or absf(z + 70.0) < 12.0 or _rng.randf() < 0.18:
 				continue
-			_tree(Vector3(side * (3.2 + _rng.randf_range(-0.2, 0.3)), 0, z + _rng.randf_range(-0.6, 0.6)), _rng.randf_range(2.0, 3.2), blobs, trunks)
-		z += 2.6
+			_tree(Vector3(side * (9.5 + _rng.randf_range(-0.5, 0.6)), 0, z + _rng.randf_range(-1.2, 1.2)), _rng.randf_range(4.5, 7.0), blobs, trunks)
+		z += 7.5
 	# 苔原上的矮灌木
-	for i in 700:
-		var p := Vector3(_rng.randf_range(-270, 140), 0, _rng.randf_range(-225, 125))
-		if _near_road(p, 2.5) or _inside_building(p, 1.0):
+	for i in 2600:
+		var p := Vector3(_rng.randf_range(-760, 330), 0, _rng.randf_range(-660, 340))
+		if _near_road(p, 5.0) or _inside_building(p, 2.5):
 			continue
 		var sc := _rng.randf_range(0.35, 0.9)
-		blobs.append(Transform3D(Basis().scaled(Vector3(sc * 1.4, sc * 0.8, sc * 1.4)), p + Vector3(0, sc * 0.3, 0)))
+		blobs.append(Transform3D(Basis().scaled(Vector3(sc * 1.4, sc * 0.8, sc * 1.4)), p + Vector3(0, sc * 0.5, 0)))
 	_multimesh(blob, frost_mat, blobs)
 	_multimesh(trunk, trunk_mat, trunks)
 
@@ -291,8 +300,8 @@ func _build_vegetation() -> void:
 func _tree(p: Vector3, h: float, blobs: Array[Transform3D], trunks: Array[Transform3D]) -> void:
 	trunks.append(Transform3D(Basis().scaled(Vector3(1, h, 1)), p + Vector3(0, h * 0.5, 0)))
 	for k in 4:
-		var o := Vector3(_rng.randf_range(-0.5, 0.5), h * _rng.randf_range(0.6, 1.05), _rng.randf_range(-0.5, 0.5))
-		var sc := _rng.randf_range(0.8, 1.5)
+		var o := Vector3(_rng.randf_range(-1.1, 1.1), h * _rng.randf_range(0.6, 1.05), _rng.randf_range(-1.1, 1.1))
+		var sc := _rng.randf_range(0.9, 1.6)
 		blobs.append(Transform3D(Basis().scaled(Vector3(sc, sc * 0.85, sc)), p + o))
 
 
@@ -419,12 +428,13 @@ func _build_spoil_heap(p: Vector3) -> void:
 
 func _build_pylons() -> void:
 	# 输电铁塔，从热电厂一路排到镇子东边
-	var pts := [Vector3(48, 0, -168), Vector3(70, 0, -120), Vector3(86, 0, -70), Vector3(96, 0, -20)]
+	var pts := [Vector3(150, 0, -500), Vector3(205, 0, -370), Vector3(250, 0, -230), Vector3(285, 0, -80)]
+	var k := 2.5
 	for p in pts:
-		_pylon(p)
+		_scaled(p, k, 0.0, func(): _pylon(Vector3.ZERO))
 	for i in range(pts.size() - 1):
-		for off in [-2.6, 2.6]:
-			_cable(pts[i] + Vector3(off, 11.5, 0), pts[i + 1] + Vector3(off, 11.5, 0), 2.5)
+		for off in [-2.6 * k, 2.6 * k]:
+			_cable(pts[i] + Vector3(off, 11.5 * k, 0), pts[i + 1] + Vector3(off, 11.5 * k, 0), 9.0)
 
 
 func _pylon(p: Vector3) -> void:
@@ -463,8 +473,9 @@ func _cable(a: Vector3, b: Vector3, sag: float) -> void:
 
 
 func _steam(p: Vector3, size: float) -> void:
+	size *= _scope_scale()
 	var s := CPUParticles3D.new()
-	s.position = p
+	s.position = _to_world(p)
 	s.amount = 26
 	s.lifetime = 11.0
 	s.preprocess = 11.0
@@ -473,8 +484,11 @@ func _steam(p: Vector3, size: float) -> void:
 	s.direction = Vector3(-0.5, 1.0, 0.3)
 	s.spread = 10.0
 	s.gravity = Vector3(-0.55, 0.05, 0.3)
-	s.initial_velocity_min = 2.0
-	s.initial_velocity_max = 3.0
+	# 大烟囱的汽团升得更快、飘得更远
+	var lift := maxf(1.0, size * 0.55)
+	s.gravity *= lift
+	s.initial_velocity_min = 2.0 * lift
+	s.initial_velocity_max = 3.0 * lift
 	s.damping_min = 0.15
 	s.damping_max = 0.25
 	s.scale_amount_min = 1.6 * size
@@ -508,14 +522,14 @@ func _steam(p: Vector3, size: float) -> void:
 func _beacon(p: Vector3) -> void:
 	var b := MeshInstance3D.new()
 	var sm := SphereMesh.new()
-	sm.radius = 0.28
-	sm.height = 0.56
+	sm.radius = 0.28 * _scope_scale()
+	sm.height = 0.56 * _scope_scale()
 	b.mesh = sm
 	var m := StandardMaterial3D.new()
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	m.albedo_color = Color(3.0, 0.25, 0.15)
 	b.material_override = m
-	b.position = p
+	b.position = _to_world(p)
 	add_child(b)
 	_beacons.append(b)
 
@@ -552,6 +566,10 @@ func _build_bus_stop(p: Vector3) -> void:
 	_cyl(0.04, 0.04, 2.6, p + Vector3(3.1, 1.3, 1.0), IRON, false)
 	_box(Vector3(0.7, 0.5, 0.04), p + Vector3(3.1, 2.4, 1.0), Color(0.86, 0.72, 0.18), false)
 	_sign(p + Vector3(3.1, 2.4, 1.03), "7", 120, IRON)
+	# 亭檐下的一盏灯
+	_box(Vector3(0.9, 0.08, 0.14), p + Vector3(0, 2.45, 0.3), Color.BLACK, false, 0.0, _mat(Color(0.3, 0.25, 0.15), 0.4, Color(1.0, 0.8, 0.5), 4.0))
+	_omni(p + Vector3(0, 2.2, 0.5), Color(1.0, 0.78, 0.5), 1.3, 7.0, false)
+	_lamp_points.append(p + Vector3(0, 0, 1.2))
 	_collider_box(Vector3(3.3, 0.8, 0.6), p + Vector3(0, 0.4, -0.35))
 
 
@@ -568,6 +586,7 @@ func _build_loudspeaker(p: Vector3) -> void:
 	_box(Vector3(0.26, 0.2, 0.26), Vector3(0, -0.08, 0), Color.BLACK, false, 0.0, _mat(Color(0.4, 0.3, 0.15), 0.3, Color(1.0, 0.78, 0.45), 4.0), head)
 	_omni(p + Vector3(0, 3.5, 0.72), Color(1.0, 0.76, 0.48), 1.6, 9.0, false)
 	_light_cone(p + Vector3(0, 3.7, 0.72), 3.7, 2.2, Color(1.0, 0.80, 0.5), 0.12)
+	_lamp_points.append(p + Vector3(0, 0, 0.72))
 	_lamp_points.append(p + Vector3(0, 0, 0.72))
 	_box(Vector3(0.9, 0.55, 0.03), p + Vector3(0.52, 3.0, 0), RED, false)
 
@@ -706,11 +725,12 @@ func _build_terminal_booth(p: Vector3) -> void:
 func _build_boiler_house() -> void:
 	# B125：小锅炉房的砖烟囱和门牌
 	var c := Town.to_world(508, 72)
-	_cyl(0.45, 0.6, 9.0, c + Vector3(1.6, 4.5 + FLOOR_H, 0.6), Color(0.45, 0.24, 0.18), false)
-	_cyl(0.5, 0.5, 0.5, c + Vector3(1.6, 9.0 + FLOOR_H, 0.6), RED, false)
-	_steam(c + Vector3(1.6, 9.8 + FLOOR_H, 0.6), 0.55)
-	_box(Vector3(1.9, 0.6, 0.06), c + Vector3(-1.0, 1.35, 1.86), RED, false)
-	_sign(c + Vector3(-1.0, 1.35, 1.9), "锅炉房", 80, CREAM)
+	_cyl(0.9, 1.3, 24.0, c + Vector3(4.5, 12.0 + FLOOR_H, 1.5), Color(0.45, 0.24, 0.18), false)
+	_cyl(1.0, 1.0, 1.2, c + Vector3(4.5, 24.0 + FLOOR_H, 1.5), RED, false)
+	_steam(c + Vector3(4.5, 26.0 + FLOOR_H, 1.5), 1.3)
+	_box(Vector3(3.4, 1.0, 0.08), c + Vector3(-3.0, 2.2, 5.56), RED, false)
+	_sign(c + Vector3(-3.0, 2.2, 5.62), "锅炉房", 140, CREAM)
+	_lamp_points.append(c + Vector3(-3.0, 0, 8.0))
 
 
 func _build_culture_palace() -> void:
@@ -720,44 +740,49 @@ func _build_culture_palace() -> void:
 	var front := c.z + 18.0 * s * 0.5
 	var h := 3 * FLOOR_H
 	for i in 6:
-		var x := c.x - 3.5 + i * 1.4
-		_box(Vector3(0.3, h - 0.6, 0.3), Vector3(x, (h - 0.6) * 0.5, front + 0.75), Color(0.82, 0.78, 0.68), i == 0 or i == 5)
-	_box(Vector3(8.2, 0.5, 1.3), Vector3(c.x, h - 0.35, front + 0.55), Color(0.74, 0.68, 0.52), false)
-	_box(Vector3(8.5, 0.2, 1.5), Vector3(c.x, h - 0.02, front + 0.55), SNOW_WHITE, false, 0.0, _snow_mat())
+		var x := c.x - 6.5 + i * 2.6
+		_box(Vector3(0.6, h - 0.9, 0.6), Vector3(x, (h - 0.9) * 0.5, front + 1.6), Color(0.82, 0.78, 0.68), i == 0 or i == 5)
+	_box(Vector3(15.0, 0.9, 2.6), Vector3(c.x, h - 0.45, front + 1.3), Color(0.74, 0.68, 0.52), false)
+	_box(Vector3(15.4, 0.3, 2.9), Vector3(c.x, h + 0.15, front + 1.3), SNOW_WHITE, false, 0.0, _snow_mat())
+	# 台阶
+	_box(Vector3(14.0, 0.3, 3.2), Vector3(c.x, 0.15, front + 1.6), Color(0.60, 0.58, 0.55), false)
 	# 大门与门上的灯
-	_box(Vector3(1.5, 2.4, 0.12), Vector3(c.x, 1.2, front + 0.04), Color(0.20, 0.12, 0.08), false)
-	_box(Vector3(1.1, 0.4, 0.05), Vector3(c.x, 2.15, front + 0.1), Color.BLACK, false, 0.0, _mat(Color(0.1, 0.07, 0.04), 0.3, Color(1.0, 0.7, 0.35), 1.8))
+	_box(Vector3(2.2, 3.0, 0.14), Vector3(c.x, 1.8, front + 0.05), Color(0.20, 0.12, 0.08), false)
+	_box(Vector3(1.8, 0.5, 0.06), Vector3(c.x, 3.6, front + 0.12), Color.BLACK, false, 0.0, _mat(Color(0.1, 0.07, 0.04), 0.3, Color(1.0, 0.7, 0.35), 2.2))
 	# 两侧的红色条幅
-	for sx in [-2.9, 2.9]:
-		_box(Vector3(0.8, 3.4, 0.04), Vector3(c.x + sx, 2.9, front + 0.06), RED, false)
-	_art_panel("poster_3", Vector2(1.0, 1.5), Vector3(c.x + 1.65, 1.55, front + 0.12))
+	for sx in [-5.2, 5.2]:
+		_box(Vector3(1.4, 6.0, 0.05), Vector3(c.x + sx, 4.6, front + 0.08), RED, false)
+	_art_panel("poster_3", Vector2(1.4, 2.1), Vector3(c.x + 2.6, 1.9, front + 0.12))
 	# 霓虹招牌：“文”字坏了，只剩“化宫”
-	_box(Vector3(4.6, 0.9, 0.1), Vector3(c.x, h + 0.75, front + 0.5), IRON, false)
-	var neon := _sign(Vector3(c.x + 0.6, h + 0.75, front + 0.57), "化 宫", 120, Color(2.4, 0.4, 0.3))
+	_box(Vector3(8.4, 1.7, 0.16), Vector3(c.x, h + 1.3, front + 1.2), IRON, false)
+	var neon := _sign(Vector3(c.x + 1.1, h + 1.3, front + 1.32), "化 宫", 120, Color(2.4, 0.4, 0.3))
+	neon.pixel_size = 0.0105
 	_neon.append(neon)
-	_neon_light = _omni(Vector3(c.x, h, front + 2.0), Color(1.0, 0.3, 0.25), 1.4, 6.0, false)
-	_light_cone(Vector3(c.x, 2.2, front + 0.5), 2.2, 1.4, Color(1.0, 0.7, 0.4), 0.1)
+	_neon_light = _omni(Vector3(c.x, h, front + 4.0), Color(1.0, 0.3, 0.25), 1.8, 12.0, false)
+	_omni(Vector3(c.x, 3.2, front + 2.2), Color(1.0, 0.7, 0.4), 1.4, 8.0, false)
+	_light_cone(Vector3(c.x, 3.5, front + 0.9), 3.5, 2.2, Color(1.0, 0.7, 0.4), 0.1)
 
 
 func _build_heating_pipes() -> void:
 	# 架空供暖管：从锅炉房出来，沿十字街北侧向西，在大街上方拱起一个“П”形补偿弯
-	var y := 2.5
-	var z := -6.3
-	_pipe_run(Vector3(22.8, y, z), Vector3(2.5, y, z))
-	_pipe_run(Vector3(2.5, y, z), Vector3(2.5, 5.2, z))
-	_pipe_run(Vector3(2.5, 5.2, z), Vector3(-2.5, 5.2, z))
-	_pipe_run(Vector3(-2.5, 5.2, z), Vector3(-2.5, y, z))
-	_pipe_run(Vector3(-2.5, y, z), Vector3(-58, y, z))
-	_pipe_run(Vector3(22.8, y, z), Vector3(22.8, y, -8.6))
-	var x := 20.0
-	while x > -58.0:
-		if absf(x) > 3.5:
-			_box(Vector3(0.14, y, 0.14), Vector3(x, y * 0.5, z - 0.3), IRON, false)
-			_box(Vector3(0.14, y, 0.14), Vector3(x, y * 0.5, z + 0.3), IRON, false)
-			_box(Vector3(0.2, 0.12, 0.9), Vector3(x, y - 0.3, z), IRON, false)
-		x -= 5.5
+	var y := 2.8
+	var z := -13.0
+	var east := Town.to_world(508, 72).x - 4.0
+	_pipe_run(Vector3(east, y, z), Vector3(7.0, y, z))
+	_pipe_run(Vector3(7.0, y, z), Vector3(7.0, 6.8, z))
+	_pipe_run(Vector3(7.0, 6.8, z), Vector3(-7.0, 6.8, z))
+	_pipe_run(Vector3(-7.0, 6.8, z), Vector3(-7.0, y, z))
+	_pipe_run(Vector3(-7.0, y, z), Vector3(-150, y, z))
+	_pipe_run(Vector3(east, y, z), Vector3(east, y, -20.0))
+	var x := east - 3.0
+	while x > -150.0:
+		if absf(x) > 8.5:
+			_box(Vector3(0.16, y, 0.16), Vector3(x, y * 0.5, z - 0.3), IRON, false)
+			_box(Vector3(0.16, y, 0.16), Vector3(x, y * 0.5, z + 0.3), IRON, false)
+			_box(Vector3(0.22, 0.14, 0.9), Vector3(x, y - 0.3, z), IRON, false)
+		x -= 8.0
 	# 接头处漏出来的蒸汽
-	_steam(Vector3(-14.0, y + 0.4, z), 0.16)
+	_steam(Vector3(-24.0, y + 0.4, z), 0.22)
 
 
 func _pipe_run(a: Vector3, b: Vector3) -> void:
@@ -785,7 +810,7 @@ func _pipe_run(a: Vector3, b: Vector3) -> void:
 		mi.material_override = pipe_mat
 		add_child(mi)
 		mi.transform = Transform3D(Basis(side, dir, side.cross(dir)), mid + side * 0.24 * sgn)
-	var n := int(length / 2.4)
+	var n := int(length / 4.0)
 	for i in range(1, n + 1):
 		var ring := MeshInstance3D.new()
 		var rm := BoxMesh.new()
@@ -821,7 +846,7 @@ func _build_billboard(p: Vector3, title: String, body: String, poster := "poster
 	var root := Node3D.new()
 	root.position = p
 	root.rotation.y = PI * 0.5
-	add_child(root)
+	_base().add_child(root)
 	for x in [-1.9, 1.9]:
 		_box(Vector3(0.14, 3.6, 0.14), Vector3(x, 1.8, -0.1), IRON, false, 0.0, null, root)
 	_box(Vector3(4.4, 2.3, 0.1), Vector3(0, 2.6, 0), RED, false, 0.0, null, root)
@@ -843,7 +868,7 @@ func _build_walker(p: Vector3) -> void:
 	var root := Node3D.new()
 	root.position = p
 	root.rotation = Vector3(0.06, 0.5, -0.1)
-	add_child(root)
+	_base().add_child(root)
 	var hull := Color(0.62, 0.36, 0.12)
 	_box(Vector3(6.4, 2.6, 4.0), Vector3(0, 5.0, 0), hull, false, 0.0, null, root)
 	_box(Vector3(6.6, 0.2, 4.2), Vector3(0, 6.4, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
@@ -885,7 +910,7 @@ func _build_walker(p: Vector3) -> void:
 		mound.mesh = sm
 		mound.material_override = _snow_mat()
 		mound.position = p + o + Vector3(0, -0.2, 0)
-		add_child(mound)
+		_base().add_child(mound)
 	_collider_box(Vector3(9.0, 4.0, 7.5), p + Vector3(0, 2, 0), 0.5)
 
 
@@ -964,7 +989,7 @@ func _art_panel(asset: String, dimensions: Vector2, pos: Vector3, parent: Node3D
 	panel.mesh = mesh
 	panel.position = pos
 	panel.material_override = _surface_mat(asset, Color.WHITE, Vector2.ONE, true)
-	(parent if parent else self).add_child(panel)
+	(parent if parent else _base()).add_child(panel)
 	return true
 
 
@@ -977,7 +1002,7 @@ func _sign(pos: Vector3, text: String, font_size: int, color: Color) -> Label3D:
 	l.shaded = false
 	l.modulate = color
 	l.position = pos
-	add_child(l)
+	_base().add_child(l)
 	return l
 
 
@@ -1010,15 +1035,11 @@ func _box(size: Vector3, pos: Vector3, color: Color, collide := true, rot_y := 0
 	mi.material_override = mat if mat else _mat(color)
 	mi.position = pos
 	mi.rotation.y = rot_y
-	(parent if parent else self).add_child(mi)
+	(parent if parent else _base()).add_child(mi)
 	if collide:
-		var sb := StaticBody3D.new()
-		var cs := CollisionShape3D.new()
 		var sh := BoxShape3D.new()
 		sh.size = size
-		cs.shape = sh
-		sb.add_child(cs)
-		mi.add_child(sb)
+		_attach_collider(mi, sh)
 	return mi
 
 
@@ -1033,37 +1054,78 @@ func _cyl(rt: float, rb: float, h: float, pos: Vector3, color: Color, collide :=
 	mi.mesh = m
 	mi.material_override = _mat(color)
 	mi.position = pos
-	(parent if parent else self).add_child(mi)
+	(parent if parent else _base()).add_child(mi)
 	if collide:
-		var sb := StaticBody3D.new()
-		var cs := CollisionShape3D.new()
 		var sh := CylinderShape3D.new()
 		sh.radius = maxf(rt, rb)
 		sh.height = h
-		cs.shape = sh
-		sb.add_child(cs)
-		mi.add_child(sb)
+		_attach_collider(mi, sh)
 	return mi
 
 
 func _collider_box(size: Vector3, pos: Vector3, rot_y := 0.0) -> void:
+	var k := _scope_scale()
 	var sb := StaticBody3D.new()
-	sb.position = pos
-	sb.rotation.y = rot_y
+	sb.position = _to_world(pos)
+	sb.rotation.y = rot_y + (_scope.rotation.y if _scope else 0.0)
 	var cs := CollisionShape3D.new()
 	var sh := BoxShape3D.new()
-	sh.size = size
+	sh.size = size * k
 	cs.shape = sh
 	sb.add_child(cs)
 	add_child(sb)
 
 
+## 在 p 处建一个缩放 k 倍的作用域，fn 里建的东西都会跟着放大。
+## 碰撞体、灯光和粒子不能直接缩放节点，辅助函数会把它们换算成世界尺寸后挂在外面。
+func _scaled(p: Vector3, k: float, rot_y: float, fn: Callable) -> void:
+	var root := Node3D.new()
+	root.position = p
+	root.rotation.y = rot_y
+	root.scale = Vector3.ONE * k
+	add_child(root)
+	_scope = root
+	fn.call()
+	_scope = null
+
+
+func _base() -> Node3D:
+	return _scope if _scope else self
+
+
+func _scope_scale() -> float:
+	return _scope.scale.x if _scope else 1.0
+
+
+func _to_world(p: Vector3) -> Vector3:
+	return _scope.transform * p if _scope else p
+
+
+func _attach_collider(mi: MeshInstance3D, shape: Shape3D) -> void:
+	var sb := StaticBody3D.new()
+	var cs := CollisionShape3D.new()
+	cs.shape = shape
+	sb.add_child(cs)
+	if _scope == null:
+		mi.add_child(sb)
+		return
+	# 作用域里的网格是放大过的：碰撞体按世界尺寸另建，不继承缩放
+	var k := _scope_scale()
+	if shape is BoxShape3D:
+		(shape as BoxShape3D).size *= k
+	elif shape is CylinderShape3D:
+		(shape as CylinderShape3D).radius *= k
+		(shape as CylinderShape3D).height *= k
+	add_child(sb)
+	sb.global_transform = mi.global_transform.orthonormalized()
+
+
 func _omni(pos: Vector3, color: Color, energy: float, rng: float, shadow: bool) -> OmniLight3D:
 	var l := OmniLight3D.new()
-	l.position = pos
+	l.position = _to_world(pos)
 	l.light_color = color
 	l.light_energy = energy
-	l.omni_range = rng
+	l.omni_range = rng * _scope_scale()
 	l.omni_attenuation = 1.4
 	l.shadow_enabled = shadow
 	add_child(l)
@@ -1117,36 +1179,36 @@ func _merge_static() -> void:
 func _build_street_lamps() -> void:
 	# 钠灯：沿大街和十字街交错排开。真正的点光源太多会超出每个物体 8 盏灯的上限，
 	# 所以灯下的光斑画在雪地着色器里，灯本身只有发光的灯头和一个光锥
-	var z := -144.0
+	var z := -455.0
 	var i := 0
-	while z < 58.0:
-		if absf(z) > 7.0 and absf(z + 24.0) > 5.0:
-			_street_lamp(Vector3(2.9 if i % 2 == 0 else -2.9, 0, z), -1.0 if i % 2 == 0 else 1.0, true)
-		z += 13.0
+	while z < 176.0:
+		if absf(z) > 14.0 and absf(z + 70.0) > 12.0:
+			_street_lamp(Vector3(6.5 if i % 2 == 0 else -6.5, 0, z), -1.0 if i % 2 == 0 else 1.0, true)
+		z += 30.0
 		i += 1
-	var x := -58.0
-	while x < 90.0:
-		if absf(x) > 9.0 and absf(x - 9.0) > 4.0 and absf(x - 21.5) > 3.0:
-			_street_lamp(Vector3(x, 0, 2.7 if i % 2 == 0 else -2.7), -1.0 if i % 2 == 0 else 1.0, false)
-		x += 13.0
+	var x := -180.0
+	while x < 275.0:
+		if absf(x) > 16.0:
+			_street_lamp(Vector3(x, 0, 6.2 if i % 2 == 0 else -6.2), -1.0 if i % 2 == 0 else 1.0, false)
+		x += 30.0
 		i += 1
 	# 厂区门口
-	for p in [Vector3(-8, 0, -156), Vector3(6, 0, -160), Vector3(-30, 0, -158)]:
+	for p in [Vector3(-20, 0, -488), Vector3(18, 0, -495), Vector3(-80, 0, -474)]:
 		_street_lamp(p, 1.0, false)
 	var pts := _lamp_points.duplicate()
-	var n := mini(pts.size(), 40)
-	pts.resize(40)
+	var n := mini(pts.size(), 64)
+	pts.resize(64)
 	_ground_mat.set_shader_parameter("lamps", pts)
 	_ground_mat.set_shader_parameter("lamp_count", n)
 
 
 func _street_lamp(p: Vector3, arm_dir: float, along_x: bool) -> void:
 	# arm_dir：灯臂朝哪一侧伸；along_x：灯臂沿 X 轴（大街两侧）还是沿 Z 轴（十字街两侧）
-	var arm := Vector3(arm_dir * 1.0, 0, 0) if along_x else Vector3(0, 0, arm_dir * 1.0)
-	_cyl(0.06, 0.09, 4.8, p + Vector3(0, 2.4, 0), IRON, false)
-	_box(Vector3(1.0, 0.07, 0.07) if along_x else Vector3(0.07, 0.07, 1.0), p + Vector3(0, 4.8, 0) + arm * 0.5, IRON, false)
-	var head := p + Vector3(0, 4.72, 0) + arm
-	_box(Vector3(0.34, 0.12, 0.2) if along_x else Vector3(0.2, 0.12, 0.34), head, Color.BLACK, false, 0.0, _mat(Color(0.3, 0.2, 0.1), 0.4, Color(1.0, 0.62, 0.25), 5.0))
+	var arm := Vector3(arm_dir * 2.0, 0, 0) if along_x else Vector3(0, 0, arm_dir * 2.0)
+	_cyl(0.07, 0.12, 8.6, p + Vector3(0, 4.3, 0), IRON, false)
+	_box(Vector3(2.0, 0.09, 0.09) if along_x else Vector3(0.09, 0.09, 2.0), p + Vector3(0, 8.6, 0) + arm * 0.5, IRON, false)
+	var head := p + Vector3(0, 8.5, 0) + arm
+	_box(Vector3(0.6, 0.16, 0.3) if along_x else Vector3(0.3, 0.16, 0.6), head, Color.BLACK, false, 0.0, _mat(Color(0.3, 0.2, 0.1), 0.4, Color(1.0, 0.62, 0.25), 6.0))
 	if _cone_mat == null:
 		_cone_mat = ShaderMaterial.new()
 		_cone_mat.shader = LIGHT_CONE
@@ -1154,8 +1216,8 @@ func _street_lamp(p: Vector3, arm_dir: float, along_x: bool) -> void:
 		_cone_mat.set_shader_parameter("strength", 0.1)
 	var m := CylinderMesh.new()
 	m.top_radius = 0.1
-	m.bottom_radius = 2.6
-	m.height = 4.6
+	m.bottom_radius = 5.0
+	m.height = 8.4
 	m.radial_segments = 16
 	m.rings = 1
 	m.cap_top = false
@@ -1163,7 +1225,7 @@ func _street_lamp(p: Vector3, arm_dir: float, along_x: bool) -> void:
 	var mi := MeshInstance3D.new()
 	mi.mesh = m
 	mi.material_override = _cone_mat
-	mi.position = head - Vector3(0, 2.36, 0)
+	mi.position = head - Vector3(0, 4.28, 0)
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mi)
 	_lamp_points.append(Vector3(head.x, 0, head.z))

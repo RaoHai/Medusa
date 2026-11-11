@@ -15,11 +15,11 @@ const KIND_COLORS := {
 	"public": Color("7fb3cc"),
 }
 ## 地图范围（米，索引图坐标）
-const BOUNDS := Rect2(-280, -560, 990, 990)
+const BOUNDS := Rect2(-300, -600, 1020, 1020)
 ## 道路（世界坐标）——和 level_builder.gd 里的一致
 const ROADS := [
-	[Vector2(0, -150), Vector2(0, 62)], [Vector2(-62, 0), Vector2(92, 0)],
-	[Vector2(0, -150), Vector2(-48, -160)], [Vector2(0, 62), Vector2(40, 84)],
+	[Vector2(0, -470), Vector2(0, 180)], [Vector2(-190, 0), Vector2(280, 0)],
+	[Vector2(0, -470), Vector2(-110, -482)], [Vector2(0, 180), Vector2(120, 250)],
 ]
 
 var player: Node3D
@@ -82,14 +82,14 @@ func _draw() -> void:
 		var b := Town.to_map(Vector3(r[1].x, 0, r[1].y))
 		draw_line(off + a * k, off + b * k, Color(INK, 0.28), 5.0)
 	# 界外的五个原轮廓：只有虚线和问号
-	var outside := [Vector2(395, -530), Vector2(430, -522), Vector2(465, -534), Vector2(410, -505), Vector2(452, -503)]
+	var outside := [Vector2(395, -572), Vector2(430, -564), Vector2(465, -576), Vector2(410, -548), Vector2(452, -546)]
 	for i in outside.size():
 		var p: Vector2 = off + outside[i] * k
 		var blink := 0.45 + 0.35 * sin(_t * 2.0 + i)
 		draw_rect(Rect2(p - Vector2(9, 5), Vector2(18, 10)), Color(RED, blink), false, 1.5)
-	draw_string(font, off + Vector2(482, -514) * k, "五个原轮廓 ?", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, RED)
-	draw_dashed_line(off + Vector2(BOUNDS.position.x, -480) * k, off + Vector2(BOUNDS.end.x, -480) * k, Color(RED, 0.7), 1.5, 8.0)
-	draw_string(font, off + Vector2(BOUNDS.position.x + 6, -488) * k, "界 外", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, RED)
+	draw_string(font, off + Vector2(482, -556) * k, "五个原轮廓 ?", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, RED)
+	draw_dashed_line(off + Vector2(BOUNDS.position.x, -505) * k, off + Vector2(BOUNDS.end.x, -505) * k, Color(RED, 0.7), 1.5, 8.0)
+	draw_string(font, off + Vector2(BOUNDS.position.x + 6, -513) * k, "界 外", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, RED)
 	# 建筑
 	for b in Town.buildings():
 		var center := Vector2(b["x"], b["z"])
@@ -106,8 +106,8 @@ func _draw() -> void:
 		if hl > 12.0 and not String(b["id"]).ends_with("b"):
 			draw_string(font, off + center * k + Vector2(-13, 4), b["id"], HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(INK, 0.85))
 	# 厂区
-	draw_string(font, off + Town.to_map(Vector3(14, 0, -176)) * k + Vector2(-28, 4), "▲ 热电厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
-	draw_string(font, off + Town.to_map(Vector3(-52, 0, -172)) * k + Vector2(-80, 4), "▲ 选矿厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
+	draw_string(font, off + Town.to_map(Vector3(45, 0, -525)) * k + Vector2(-28, 4), "▲ 热电厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
+	draw_string(font, off + Town.to_map(Vector3(-140, 0, -508)) * k + Vector2(-80, 4), "▲ 选矿厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
 	# 你在这里
 	if player:
 		var pp: Vector2 = off + Town.to_map(player.global_position) * k

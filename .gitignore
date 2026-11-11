@@ -1,3 +1,4 @@
 .godot/
 *.import
+!textures/*.import
 build/

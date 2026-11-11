@@ -4,8 +4,8 @@ extends CharacterBody3D
 
 signal arrived_at(target: Node3D)
 
-@export var walk_speed := 3.0
-@export var run_speed := 5.6
+@export var walk_speed := 3.4
+@export var run_speed := 7.5
 
 @onready var visual: Node3D = $Visual
 

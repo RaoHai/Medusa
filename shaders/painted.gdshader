@@ -25,12 +25,12 @@ varying vec3 wpos;
 varying vec3 wnorm;
 // 人物被挡住时的镂空：相机始终对着人物（见 camera_rig.gd），所以人物在视图空间里
 // 位于 (0, 0, -camera_distance)。片元比人物离相机近、且落在画面中心附近时，按抖动图案丢弃。
-uniform float camera_distance = 90.0;
+uniform float camera_distance = 220.0;
 varying vec3 vpos_view;
 // 极夜的雾：离画面中心（也就是人物）越远，越沉进蓝灰色的雾里
 uniform vec3 fog_color : source_color = vec3(0.075, 0.09, 0.115);
-uniform float fog_start = 12.0;
-uniform float fog_end = 46.0;
+uniform float fog_start = 28.0;
+uniform float fog_end = 125.0;
 uniform float fog_max : hint_range(0.0, 1.0) = 0.96;
 
 float hash3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
@@ -58,8 +58,8 @@ void vertex() {
 void fragment() {
 	{
 		float ahead = vpos_view.z + camera_distance;
-		float d = length(vpos_view.xy - vec2(0.0, 0.6));
-		float cut = (1.0 - smoothstep(3.0, 5.5, d)) * smoothstep(1.2, 2.5, ahead);
+		float d = length(vpos_view.xy - vec2(0.0, 0.8));
+		float cut = (1.0 - smoothstep(4.0, 8.0, d)) * smoothstep(1.2, 2.5, ahead);
 		float dither = fract(dot(floor(FRAGCOORD.xy), vec2(0.7548777, 0.5698403)));
 		if (cut > dither * 0.9 + 0.1) {
 			discard;
