@@ -10,6 +10,10 @@ uniform vec4 roads[8];
 uniform float road_width[8];
 uniform int road_count = 0;
 uniform vec2 wind_dir = vec2(0.8, 0.6);
+uniform sampler2D snow_texture : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D road_texture : source_color, filter_linear_mipmap, repeat_enable;
+uniform bool use_snow_texture = false;
+uniform bool use_road_texture = false;
 
 varying vec3 wpos;
 varying vec3 vpos_view;
@@ -66,6 +70,9 @@ void fragment() {
 	float fine = vnoise(vec2(dot(p, w) * 0.6, dot(p, vec2(-w.y, w.x)) * 3.5));
 	vec3 c = mix(hollow_color.rgb, snow_color.rgb, smoothstep(0.25, 0.7, drift));
 	c *= 0.94 + 0.1 * fine;
+	if (use_snow_texture) {
+		c = mix(c, texture(snow_texture, p / 4.0).rgb * mix(hollow_color.rgb, snow_color.rgb, drift), 0.8);
+	}
 
 	// 道路
 	float road = 0.0;
@@ -79,6 +86,9 @@ void fragment() {
 		rut = max(rut, (1.0 - smoothstep(0.1, 0.32, r)) * step(d, hw));
 	}
 	c = mix(c, road_color.rgb * (0.9 + 0.2 * vnoise(p * 1.7)), road * 0.85);
+	if (use_road_texture) {
+		c = mix(c, texture(road_texture, p / 4.0).rgb, road * 0.85);
+	}
 	c = mix(c, rut_color.rgb, rut * 0.55 * (0.6 + 0.4 * vnoise(p * vec2(0.4, 3.0))));
 
 	// 冰晶反光

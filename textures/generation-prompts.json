@@ -1,0 +1,70 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "file": "snow.png",
+      "prompt": "Use case: stylized-concept. Asset type: game diffuse texture snow.png, 1024x1024 square, seamless tile on all four edges, representing 4m x 4m. Orthographic straight-down surface scan of wind-hardened snow, very fine wind ripples and compact ice grains, restrained painterly realism, gray ivory cool low saturation medium-light albedo. Completely even flat lighting, no cast shadows, no highlights, no vignette, no horizon, no objects, footprints, text, watermark or border. Edge-to-edge single continuous material; perfectly tileable."
+    },
+    {
+      "file": "snow_road.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse albedo material texture, 1024x1024 square. Flat orthographic surface scan, uniform neutral illumination, no perspective, baked shadows, highlights, vignette, text, watermark, border or objects. Subtle painterly realistic surface for a snowbound Soviet industrial town; low saturation, medium brightness. Seamless horizontal and vertical tiling with matching opposing edges. Compacted dirty snow road covering 4m x4m, faint parallel tire impressions along vertical axis, fine coal dust and gray compressed ice grains, no footprints or isolated deep ruts."
+    },
+    {
+      "file": "concrete_panel.png",
+      "prompt": "Use case: stylized-concept. Asset type: production game albedo texture, 1024x1024 square. Flat orthographic frontal surface scan, no perspective, evenly lit, NO baked shadows, specular highlights, vignette, text, signage, watermark or borders. Low saturation, medium brightness, subtle painterly realism for a snowbound Soviet industrial town. Seamlessly tileable horizontally and vertically, matching opposite edges. A continuous gray-white weathered plaster surface on Soviet prefabricated concrete. Fine cracks, subtle water stains, repairs. Represents 3m x3m. NO panel seams, windows or objects."
+    },
+    {
+      "file": "plaster_peeling.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse albedo material texture, 1024x1024 square. Flat orthographic surface scan, uniform neutral illumination, no perspective, baked shadows, highlights, vignette, text, watermark, border or objects. Subtle painterly realistic surface for a snowbound Soviet industrial town; low saturation, medium brightness. Seamless horizontal and vertical tiling with matching opposing edges. Weathered pale gray plaster with broad irregular areas peeling away to expose old muted red brick underneath, thin flaking edges, gray mortar, covers 3m x3m; no wall corners."
+    },
+    {
+      "file": "brick.png",
+      "prompt": "Use case: stylized-concept. Asset type: production game albedo texture, 1024x1024 square. Flat orthographic frontal surface scan, no perspective, evenly lit, NO baked shadows, specular highlights, vignette, text, signage, watermark or borders. Low saturation, medium brightness, subtle painterly realism for a snowbound Soviet industrial town. Seamlessly tileable horizontally and vertically, matching opposite edges. Old muted red brick wall, off-white mortar joints and subtle soot. Running bond, whole aligned courses wrapping to opposite edges, represents 2m x2m. No large distinctive stains."
+    },
+    {
+      "file": "metal_rust.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse albedo material texture, 1024x1024 square. Flat orthographic surface scan, uniform neutral illumination, no perspective, baked shadows, highlights, vignette, text, watermark, border or objects. Subtle painterly realistic surface for a snowbound Soviet industrial town; low saturation, medium brightness. Seamless horizontal and vertical tiling with matching opposing edges. Old rusty iron sheet, muted orange brown corrosion, fine pitting, vertical rust runoff stains, subtle variation, covers 2m x2m."
+    },
+    {
+      "file": "metal_painted.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse albedo material texture, 1024x1024 square. Flat orthographic surface scan, uniform neutral illumination, no perspective, baked shadows, highlights, vignette, text, watermark, border or objects. Subtle painterly realistic surface for a snowbound Soviet industrial town; low saturation, medium brightness. Seamless horizontal and vertical tiling with matching opposing edges. Old gray-green painted sheet metal, flaking and lifting paint exposing dark gray iron and restrained rust, covers 2m x2m. No panel seams or bolts."
+    },
+    {
+      "file": "wood_planks.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse albedo material texture, 1024x1024 square. Flat orthographic surface scan, uniform neutral illumination, no perspective, baked shadows, highlights, vignette, text, watermark, border or objects. Subtle painterly realistic surface for a snowbound Soviet industrial town; low saturation, medium brightness. Seamless horizontal and vertical tiling with matching opposing edges. Old vertical wooden planks, gray-brown weathered wood grain, narrow straight joints, occasional small nail holes, covers 2m x2m, no diagonal boards or crossbeams."
+    },
+    {
+      "file": "pipe_wrap.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse texture. Orthographic frontal flat scan, no perspective, no baked shadows, highlights or vignette. Low saturation and medium brightness, subtle painterly realism. NO text, watermark, border or signage. 1024x512 landscape, seamless insulation sheet for heating pipe, yellowed gray galvanized iron. Orthographic flat unrolled cladding, regularly spaced vertical joint strips and small rivets, fine oxidation. Represents 2m horizontal pipe length x1m circumference. Horizontally continuous, no actual cylindrical pipe silhouette."
+    },
+    {
+      "file": "facade_block.png",
+      "prompt": "Use case: stylized-concept. Asset type: production game albedo texture, 1024x1024 square. Flat orthographic frontal surface scan, no perspective, evenly lit, NO baked shadows, specular highlights, vignette, text, signage, watermark or borders. Low saturation, medium brightness, subtle painterly realism for a snowbound Soviet industrial town. Seamlessly tileable horizontally and vertically, matching opposite edges. Exactly ONE bay and ONE floor of a residential gray-white prefab building, no perspective. Single rectangular wooden framed window: OUTER window opening x=25% to75%, y=22% to72% of image. Dark muted glass, no lit windows. Cross mullion inside opening. Thin half-width concrete panel seam on all four image edges. No other windows, no snow, no ledge shadows. Keep all details within exact window rectangle."
+    },
+    {
+      "file": "facade_husk.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse texture. Orthographic frontal flat scan, no perspective, no baked shadows, highlights or vignette. Low saturation and medium brightness, subtle painterly realism. NO text, watermark, border or signage. 1024x1024 square, seamlessly tileable horizontally and vertically. Exactly ONE bay and ONE floor, one window opening with EXACT rectangle x=25%..75%, y=22%..72%. Thin half-panel seam at all four image edges; no other openings, no exterior view or ground. Unheated abandoned Soviet prefab housing bay: dirty gray-white concrete plaster, skewed wooden window frame WITHIN exact opening bounds, broken dark glass panes and subtle cracks, no light, all opaque."
+    },
+    {
+      "file": "facade_ruin.png",
+      "prompt": "Use case: stylized-concept. Asset type: production game albedo texture, 1024x1024 square. Flat orthographic frontal surface scan, no perspective, evenly lit, NO baked shadows, specular highlights, vignette, text, signage, watermark or borders. Low saturation, medium brightness, subtle painterly realism for a snowbound Soviet industrial town. Seamlessly tileable horizontally and vertically, matching opposite edges. Exactly ONE bay and ONE floor of abandoned ruined prefab wall, gray plaster peeling broadly to expose muted red brick. Exactly one EMPTY rectangular window opening, no frame, no glass, no sill, no interior: rectangle x=25% to75%, y=22% to72% must be genuinely TRANSPARENT alpha zero. All wall pixels outside this rectangle opaque. Thin half-width panel seams on four outer image edges. No other openings, no rubble outside edges. Transparent background ONLY in window opening."
+    },
+    {
+      "file": "facade_factory.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse texture. Orthographic frontal flat scan, no perspective, no baked shadows, highlights or vignette. Low saturation and medium brightness, subtle painterly realism. NO text, watermark, border or signage. 1024x1024 square, seamlessly tileable horizontally and vertically. Exactly ONE bay and ONE floor, one window opening with EXACT rectangle x=25%..75%, y=22%..72%. Thin half-panel seam at all four image edges; no other openings, no exterior view or ground. Red brick factory facade bay, one industrial window with narrow tall divisions and iron mullions INSIDE the exact window rectangle. Dark opaque glass, no lit panes; muted red brick and pale gray mortar."
+    },
+    {
+      "file": "facade_stripe.png",
+      "prompt": "Use case: stylized-concept. Production game diffuse texture. Orthographic frontal flat scan, no perspective, no baked shadows, highlights or vignette. Low saturation and medium brightness, subtle painterly realism. NO text, watermark, border or signage. 1024x1024 square, seamlessly tileable horizontally and vertically. Exactly ONE bay and ONE floor, one window opening with EXACT rectangle x=25%..75%, y=22%..72%. Thin half-panel seam at all four image edges; no other openings, no exterior view or ground. Mineral processing factory facade, faded blue-white horizontal sheet metal stripes, one small square dark window occupying exact required rectangle, thin industrial metal frame. All opaque. No writing."
+    },
+    {
+      "file": "mosaic_sun.png",
+      "prompt": "Use case: stylized-concept. Production game artwork, flat orthographic front-facing scan, no perspective, no mockup, no surroundings, edge-to-edge image. No text, letters, numbers, watermark or border. 1024x512 landscape. Weathered Soviet bus shelter ceramic mosaic mural: radiant stylized golden sun in muted red ochre cream and desaturated teal, composed of small visible square ceramic tesserae, radial rays, worn grout and some missing tiles exposing gray plaster. Even flat lighting, no highlights or cast shadows."
+    },
+    {
+      "file": "map_paper.png",
+      "prompt": "Use case: stylized-concept. Production game artwork, flat orthographic front-facing scan, no perspective, no mockup, no surroundings, edge-to-edge image. No text, letters, numbers, watermark or border. 1024x768 landscape. Old yellowed cream architectural drawing paper background, subtle fold creases and faint water stains near edges, center 75% mostly clean and blank for readable interactive map overlay. Low contrast, medium-light brightness. Absolutely no map lines, grids, marks, text or drawings. Uniform diffuse illumination."
+    }
+  ],
+  "historical_posters": "poster-sources.json"
+}

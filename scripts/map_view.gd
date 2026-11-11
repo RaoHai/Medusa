@@ -3,6 +3,7 @@ extends Control
 ## 直接用 data/buildings.json 里的轮廓来画，所以和场景里的建筑一一对应。
 
 const Town := preload("res://scripts/town_data.gd")
+const Textures := preload("res://scripts/texture_library.gd")
 
 const PAPER := Color("e4d8ba")
 const INK := Color("1a1614")
@@ -53,6 +54,9 @@ func _draw() -> void:
 	var margin := Vector2(120, 70)
 	var sheet := Rect2(margin, size - margin * 2.0)
 	draw_rect(sheet, PAPER)
+	var paper := Textures.get_texture("map_paper")
+	if paper != null:
+		draw_texture_rect(paper, sheet, false)
 	draw_rect(Rect2(sheet.position, Vector2(sheet.size.x, 54)), RED)
 	draw_string(font, sheet.position + Vector2(24, 37), "建筑编号索引 | B001–B132", HORIZONTAL_ALIGNMENT_LEFT, -1, 26, PAPER)
 	draw_string(font, sheet.position + Vector2(sheet.size.x - 330, 36), "国家建筑普查委员会 · 霜原-7", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, PAPER)

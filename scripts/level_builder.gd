@@ -16,6 +16,7 @@ const BUILDING := preload("res://shaders/building.gdshader")
 const LIGHT_CONE := preload("res://shaders/light_cone.gdshader")
 const Fonts := preload("res://scripts/fonts.gd")
 const Town := preload("res://scripts/town_data.gd")
+const Textures := preload("res://scripts/texture_library.gd")
 
 const FLOOR_H := 1.8
 const RED := Color(0.70, 0.12, 0.09)
@@ -89,7 +90,7 @@ func build() -> void:
 	_build_heating_pipes()
 	_build_monument(Vector3(0, 0, -24))
 	_build_billboard(Vector3(-3.6, 0, -9.5), "计划就是法律", "每一栋楼都有编号\n每一个人都有位置")
-	_build_billboard(Vector3(-3.6, 0, 22), "煤是工业的面包", "第七矿超额完成\n第四季度采掘任务")
+	_build_billboard(Vector3(-3.6, 0, 22), "煤是工业的面包", "第七矿超额完成\n第四季度采掘任务", "poster_2")
 	_build_walker(Vector3(-9, 0, -118))
 	_build_truck(Vector3(-16, 0, 2.6))
 	_build_street_lamps()
@@ -119,6 +120,8 @@ func _process(delta: float) -> void:
 func _build_ground() -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = SNOW
+	Textures.bind_texture(mat, "snow_texture", "snow")
+	Textures.bind_texture(mat, "road_texture", "snow_road")
 	var segs := PackedVector4Array()
 	var widths := PackedFloat32Array()
 	for r in ROADS:
@@ -191,6 +194,10 @@ func _building_mat(size: Vector3, color: Color, sd: float, lit: float, ruined: f
 	m.set_shader_parameter("ruined", ruined)
 	m.set_shader_parameter("frost", frost)
 	m.set_shader_parameter("floor_height", FLOOR_H)
+	var facade := "facade_ruin" if ruined > 0.5 else ("facade_husk" if lit < 0.02 else "facade_block")
+	Textures.bind_texture(m, "facade_texture", facade)
+	Textures.bind_texture(m, "wall_texture", "plaster_peeling" if ruined > 0.5 else "concrete_panel")
+	Textures.bind_texture(m, "snow_texture", "snow")
 	return m
 
 
@@ -225,7 +232,7 @@ func _ruin(root: Node3D, length: float, width: float, floors: int, sd: float) ->
 		var pos := Vector3(sx * (length * 0.5 - t * 0.5), h * 0.5, 0)
 		_box(size, pos, color, false, 0.0, _building_mat(size, color, sd + 1.0, 0.0, 1.0, 0.8), root)
 		_box(Vector3(t + 0.12, 0.1, width), pos + Vector3(0, h * 0.5 + 0.05, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
-	var inner := _mat(Color(0.62, 0.60, 0.60), 0.9)
+	var inner := _surface_mat("plaster_peeling", Color(0.62, 0.60, 0.60), Vector2(3, 3))
 	# 横向隔墙，高低不一（塌掉的部分）
 	var n := maxi(2, int(length / 3.4))
 	for i in range(1, n):
@@ -396,6 +403,9 @@ func _factory_mat(size: Vector3, color: Color, sd: float, lit: float, stripes: f
 	var m := _building_mat(size, color, sd, lit, 0.0, 0.35)
 	m.set_shader_parameter("stripe_amount", stripes)
 	m.set_shader_parameter("bay_width", 2.2)
+	Textures.bind_texture(m, "facade_texture", "facade_stripe" if stripes > 0.5 else "facade_factory")
+	Textures.bind_texture(m, "wall_texture", "metal_painted" if stripes > 0.5 else "brick")
+	m.set_shader_parameter("wall_texture_meters", 2.0)
 	return m
 
 
@@ -514,7 +524,7 @@ func _beacon(p: Vector3) -> void:
 func _build_bus_stop(p: Vector3) -> void:
 	# 混凝土候车亭，背墙上是马赛克拼的太阳
 	var conc := Color(0.62, 0.62, 0.64)
-	_box(Vector3(4.6, 2.5, 0.25), p + Vector3(0, 1.25, -0.9), conc, true)
+	_box(Vector3(4.6, 2.5, 0.25), p + Vector3(0, 1.25, -0.9), conc, true, 0.0, _surface_mat("concrete_panel", conc, Vector2(3, 3)))
 	_box(Vector3(0.25, 2.5, 1.6), p + Vector3(-2.2, 1.25, -0.2), conc, true)
 	var roof := _box(Vector3(5.2, 0.2, 2.6), p + Vector3(0, 2.62, 0.0), conc * 0.8, false)
 	roof.rotation.x = 0.06
@@ -523,16 +533,18 @@ func _build_bus_stop(p: Vector3) -> void:
 	_cyl(0.08, 0.08, 2.5, p + Vector3(2.3, 1.25, 0.9), IRON, false)
 	# 马赛克：放射状的色块
 	var tiles := [RED, Color(0.86, 0.62, 0.16), Color(0.16, 0.36, 0.60), Color(0.88, 0.84, 0.72), Color(0.10, 0.45, 0.42)]
-	for i in 9:
+	var has_mosaic := _art_panel("mosaic_sun", Vector2(4.0, 2.0), p + Vector3(0, 1.3, -0.755))
+	for i in (0 if has_mosaic else 9):
 		var a := PI * (float(i) + 0.5) / 9.0
 		var tile := _box(Vector3(0.34, 1.2, 0.04), p + Vector3(cos(a) * 1.15, 0.95 + sin(a) * 1.0, -0.76), tiles[i % tiles.size()], false)
 		tile.rotation.z = a - PI * 0.5
-	var sun := _cyl(0.5, 0.5, 0.05, p + Vector3(0, 0.95, -0.75), Color(0.86, 0.62, 0.16), false)
-	sun.rotation.x = PI * 0.5
+	if not has_mosaic:
+		var sun := _cyl(0.5, 0.5, 0.05, p + Vector3(0, 0.95, -0.75), Color(0.86, 0.62, 0.16), false)
+		sun.rotation.x = PI * 0.5
 	# 长椅
 	var wood := Color(0.36, 0.24, 0.16)
 	for k in 3:
-		_box(Vector3(3.2, 0.06, 0.13), p + Vector3(0, 0.5, -0.45 + k * 0.16), wood * (0.9 + k * 0.06), false)
+		_box(Vector3(3.2, 0.06, 0.13), p + Vector3(0, 0.5, -0.45 + k * 0.16), wood * (0.9 + k * 0.06), false, 0.0, _surface_mat("wood_planks", wood))
 	for x in [-1.4, 1.4]:
 		_box(Vector3(0.08, 0.5, 0.5), p + Vector3(x, 0.25, -0.3), IRON, false)
 	_box(Vector3(1.7, 0.1, 0.4), p + Vector3(-0.7, 0.58, -0.4), SNOW_WHITE, false, 0.0, _snow_mat())
@@ -644,7 +656,7 @@ func _build_ration_crates(p: Vector3) -> void:
 
 
 func _crate(p: Vector3, s: float, c: Color, rot: float) -> void:
-	var crate := _box(Vector3(s, s, s), p, c, true, rot)
+	var crate := _box(Vector3(s, s, s), p, c, true, rot, _surface_mat("wood_planks", c))
 	for k in [-1, 1]:
 		_box(Vector3(s + 0.02, 0.08, s + 0.02), Vector3(0, k * s * 0.44, 0), c * 0.6, false, 0.0, null, crate)
 		_box(Vector3(0.08, s, s + 0.02), Vector3(k * s * 0.44, 0, 0), c * 0.6, false, 0.0, null, crate)
@@ -718,6 +730,7 @@ func _build_culture_palace() -> void:
 	# 两侧的红色条幅
 	for sx in [-2.9, 2.9]:
 		_box(Vector3(0.8, 3.4, 0.04), Vector3(c.x + sx, 2.9, front + 0.06), RED, false)
+	_art_panel("poster_3", Vector2(1.0, 1.5), Vector3(c.x + 1.65, 1.55, front + 0.12))
 	# 霓虹招牌：“文”字坏了，只剩“化宫”
 	_box(Vector3(4.6, 0.9, 0.1), Vector3(c.x, h + 0.75, front + 0.5), IRON, false)
 	var neon := _sign(Vector3(c.x + 0.6, h + 0.75, front + 0.57), "化 宫", 120, Color(2.4, 0.4, 0.3))
@@ -765,7 +778,11 @@ func _pipe_run(a: Vector3, b: Vector3) -> void:
 		m.radial_segments = 10
 		m.rings = 1
 		mi.mesh = m
-		mi.material_override = _mat(Color(0.66, 0.60, 0.46) if sgn < 0.0 else Color(0.58, 0.56, 0.52), 0.6)
+		var pipe_mat := _surface_mat("pipe_wrap", Color(0.66, 0.60, 0.46), Vector2(2, 1), true).duplicate() as ShaderMaterial
+		# CylinderMesh 的 UV.y 沿轴向，按实际长度重复，不随静态合并改变。
+		pipe_mat.set_shader_parameter("texture_uv_scale", Vector2(length / 2.0, 1))
+		pipe_mat.set_shader_parameter("texture_uv_swap", true)
+		mi.material_override = pipe_mat
 		add_child(mi)
 		mi.transform = Transform3D(Basis(side, dir, side.cross(dir)), mid + side * 0.24 * sgn)
 	var n := int(length / 2.4)
@@ -799,7 +816,7 @@ func _build_monument(p: Vector3) -> void:
 	_sign(p + Vector3(0, 1.3, 0.8), "1957", 90, Color(0.80, 0.70, 0.45))
 
 
-func _build_billboard(p: Vector3, title: String, body: String) -> void:
+func _build_billboard(p: Vector3, title: String, body: String, poster := "poster_1") -> void:
 	# 宣传牌：红底、奶油色大字、一道斜向的黑条。立在大街西侧，牌面朝东
 	var root := Node3D.new()
 	root.position = p
@@ -810,11 +827,12 @@ func _build_billboard(p: Vector3, title: String, body: String) -> void:
 	_box(Vector3(4.4, 2.3, 0.1), Vector3(0, 2.6, 0), RED, false, 0.0, null, root)
 	var bar := _box(Vector3(1.6, 0.3, 0.02), Vector3(1.7, 2.1, 0.06), Color(0.08, 0.07, 0.07), false, 0.0, null, root)
 	bar.rotation.z = 0.9
+	var has_poster := _art_panel(poster, Vector2(1.32, 1.98), Vector3(-1.35, 2.6, 0.068), root)
 	_box(Vector3(4.4, 0.08, 0.02), Vector3(0, 2.72, 0.062), CREAM, false, 0.0, null, root)
 	_box(Vector3(4.6, 0.14, 0.4), Vector3(0, 3.82, 0), SNOW_WHITE, false, 0.0, _snow_mat(), root)
-	var t := _sign(Vector3(0, 3.2, 0.075), title, 110, Color(0.95, 0.90, 0.76))
+	var t := _sign(Vector3(0.65 if has_poster else 0.0, 3.2, 0.075), title, 72 if has_poster else 110, Color(0.95, 0.90, 0.76))
 	t.reparent(root, false)
-	var bl := _sign(Vector3(-0.3, 2.15, 0.075), body, 54, Color(0.95, 0.90, 0.76))
+	var bl := _sign(Vector3(0.65 if has_poster else -0.3, 2.15, 0.075), body, 54, Color(0.95, 0.90, 0.76))
 	bl.font = Fonts.make(700)
 	bl.reparent(root, false)
 	_collider_box(Vector3(0.5, 3.6, 4.4), p + Vector3(0, 1.8, 0))
@@ -894,6 +912,8 @@ func _build_truck(p: Vector3) -> void:
 # ================================================================ 工具函数
 ## 相同参数的材质只建一份——这样用到它的零碎网格才能在 _merge_static() 里合并
 func _mat(color: Color, rough := 0.85, emission := Color.BLACK, energy := 0.0) -> ShaderMaterial:
+	if energy == 0.0 and (color == IRON or color == RUST):
+		return _surface_mat("metal_rust" if color == RUST else "metal_painted", color)
 	var key := [color, rough, emission, energy]
 	if not _mat_cache.has(key):
 		_mat_cache[key] = _mat_new(color, rough, emission, energy)
@@ -919,7 +939,33 @@ func _snow_mat() -> ShaderMaterial:
 		_snow_material.set_shader_parameter("variation", 0.08)
 		_snow_material.set_shader_parameter("hue_drift", 0.25)
 		_snow_material.set_shader_parameter("banding", 0.3)
+		Textures.bind_texture(_snow_material, "surface_texture", "snow")
+		_snow_material.set_shader_parameter("texture_meters", Vector2(4, 4))
 	return _snow_material
+
+
+func _surface_mat(asset: String, color: Color, meters := Vector2(2, 2), mesh_uv := false) -> ShaderMaterial:
+	var key := [asset, color, meters, mesh_uv]
+	if not _mat_cache.has(key):
+		var m := _mat_new(color)
+		Textures.bind_texture(m, "surface_texture", asset)
+		m.set_shader_parameter("texture_meters", meters)
+		m.set_shader_parameter("texture_mesh_uv", mesh_uv)
+		_mat_cache[key] = m
+	return _mat_cache[key]
+
+
+func _art_panel(asset: String, dimensions: Vector2, pos: Vector3, parent: Node3D = null) -> bool:
+	if Textures.get_texture(asset) == null:
+		return false
+	var mesh := QuadMesh.new()
+	mesh.size = dimensions
+	var panel := MeshInstance3D.new()
+	panel.mesh = mesh
+	panel.position = pos
+	panel.material_override = _surface_mat(asset, Color.WHITE, Vector2.ONE, true)
+	(parent if parent else self).add_child(panel)
+	return true
 
 
 func _sign(pos: Vector3, text: String, font_size: int, color: Color) -> Label3D:

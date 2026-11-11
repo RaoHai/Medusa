@@ -16,6 +16,13 @@ uniform float ruined : hint_range(0.0, 1.0) = 0.0;
 uniform float windows : hint_range(0.0, 1.0) = 1.0;
 uniform float frost : hint_range(0.0, 1.0) = 0.6;
 uniform float banding : hint_range(0.0, 1.0) = 0.8;
+uniform sampler2D facade_texture : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D wall_texture : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D snow_texture : source_color, filter_linear_mipmap, repeat_enable;
+uniform bool use_facade_texture = false;
+uniform bool use_wall_texture = false;
+uniform bool use_snow_texture = false;
+uniform float wall_texture_meters = 3.0;
 
 varying vec3 lpos;
 varying vec3 lnorm;
@@ -69,6 +76,9 @@ void fragment() {
 	if (lnorm.y > 0.5) {
 		// 顶面：积雪
 		c = mix(vec3(0.78, 0.83, 0.94), vec3(0.93, 0.95, 0.99), n);
+		if (use_snow_texture) {
+			c = texture(snow_texture, wpos.xz / 4.0).rgb;
+		}
 	} else if (lnorm.y > -0.5) {
 		bool x_face = abs(lnorm.x) > 0.5;
 		float u = x_face ? lpos.z : lpos.x;
@@ -100,21 +110,31 @@ void fragment() {
 		// 窗洞（离两端留出半个开间）
 		float in_len = step(abs(u), face_len * 0.5 - bay_width * 0.35);
 		float in_h = step(v, size.y - 0.15);
-		float win = step(0.24, fu) * step(fu, 0.76) * step(0.3, fv) * step(fv, 0.8) * in_len * in_h * windows;
+		float win = step(0.25, fu) * step(fu, 0.75) * step(0.28, fv) * step(fv, 0.78) * in_len * in_h * windows;
 		if (win > 0.5) {
 			vec2 id = vec2(floor(u / bay_width + 0.5), fl) + face_id * 17.0 + seed;
 			float r = hash(id);
 			float is_lit = step(r, lit_ratio) * (1.0 - ruined);
 			// 窗框十字
-			float cross_bar = max(1.0 - smoothstep(0.0, 0.03, abs(fu - 0.5)), 1.0 - smoothstep(0.0, 0.04, abs(fv - 0.6)));
+			float cross_bar = max(1.0 - smoothstep(0.0, 0.03, abs(fu - 0.5)), 1.0 - smoothstep(0.0, 0.04, abs(fv - 0.53)));
 			vec3 dark = mix(vec3(0.10, 0.13, 0.20), vec3(0.04, 0.05, 0.08), ruined);
 			vec3 glow = mix(vec3(1.0, 0.72, 0.36), vec3(0.45, 0.95, 0.9), step(0.8, hash(id + 3.0)));
 			c = mix(dark, wall_color.rgb * 0.55, cross_bar * (1.0 - ruined));
 			emit = glow * is_lit * (1.0 - cross_bar * 0.6) * (1.6 + hash(id + 9.0));
 			rough = mix(0.25, 0.9, ruined);
 		}
+		// 可选立面贴图，保留程序化灯光。
+		if (use_wall_texture && win < 0.5) {
+			c = mix(c, texture(wall_texture, vec2(u, -v) / wall_texture_meters).rgb, 0.8);
+		}
+		if (use_facade_texture && in_len * in_h * windows > 0.5) {
+			vec4 facade = texture(facade_texture, vec2(fu, 1.0 - fv));
+			// 裁切而非半透明混合，保持墙体的深度和阴影正确。
+			if (ruined > 0.5 && facade.a < 0.5) { discard; }
+			c = facade.rgb * mix(vec3(1.0), wall_color.rgb, 0.15);
+		}
 		// 窗台上的积雪
-		float sill = step(0.24, fu) * step(fu, 0.76) * step(0.25, fv) * step(fv, 0.31) * in_len * in_h * windows;
+		float sill = step(0.25, fu) * step(fu, 0.75) * step(0.24, fv) * step(fv, 0.29) * in_len * in_h * windows;
 		c = mix(c, vec3(0.92, 0.94, 0.99), sill);
 
 		// 墙根的雪堆、檐下和墙面的霜

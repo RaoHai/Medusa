@@ -1,0 +1,55 @@
+{
+  "kind": "historical_artwork_scans",
+  "assets": [
+    {
+      "file": "poster_1.png",
+      "artist": "Gustav Klutsis",
+      "year": 1930,
+      "title": "We Shall Pay Back Our Coal Debt to This Country",
+      "catalog_url": "https://www.moma.org/collection/works/6516",
+      "image_url": "https://www.moma.org/media/W1siZiIsIjIxMTE2OSJdLFsicCIsImNvbnZlcnQiLCItcXVhbGl0eSA5MCAtcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.jpg?sha=6a1f560d85567527",
+      "source_size": [
+        1418,
+        2000
+      ],
+      "source_sha256": "ffecc229a015d2c5e85a307c9b52b2f648b2a26b0ab7ed4b42fc8e142a334a0e",
+      "delivered_sha256": "78d40ce6115a2b898260a24ec42c038b4848d4faf9695d6001ed3d30e557aabc",
+      "processing": "原作数字图像；仅等比缩放、补边和128色PNG压缩；poster_3另裁除白色扫描背景。",
+      "rights_status": "未确认公开发行或商用授权；不声明开放许可。"
+    },
+    {
+      "file": "poster_2.png",
+      "artist": "Nikolai Chomov / Iurii Merkulov",
+      "year": 1930,
+      "title": "Fulfill the five-year plan not in five years, but in four",
+      "catalog_url": "https://library.brown.edu/cds/Views_and_Reviews/date_lists/1926-40.html",
+      "download_page": "https://papik.pro/grafic/plakat/14983-pjatiletka-plakaty-god-46-foto.html",
+      "image_url": "https://papik.pro/grafic/uploads/posts/2023-04/1681961530_papik-pro-p-pyatiletka-plakati-god-11.png",
+      "source_size": [
+        640,
+        972
+      ],
+      "source_sha256": "5fac92f26d1bac8f53e52ccb5f20ce3db146d5698e9d462b50a5b414acb4572c",
+      "delivered_sha256": "b2ebcafe52739ba097919039fca60fc016cb1e1ef0cc53350fe4d9f8efce2174",
+      "processing": "原作数字图像；仅等比缩放、补边和128色PNG压缩；poster_3另裁除白色扫描背景。",
+      "rights_status": "未确认公开发行或商用授权；不声明开放许可。"
+    },
+    {
+      "file": "poster_3.png",
+      "artist": "Valentina Kulagina",
+      "year": 1931,
+      "title": "Let’s Give 8 million Tons of Pig Iron for Socialism in Construction in 1931",
+      "catalog_url": "https://mcbcollection.squarespace.com/valentina-kulagina",
+      "image_url": "https://images.squarespace-cdn.com/content/v1/5e68e6f8d34bcf00a52fd5a6/1624989713444-99PNV711BN5MYGCHY06V/JS_5D_1136.jpg",
+      "source_size": [
+        1750,
+        1750
+      ],
+      "rights_note": "来源页面明确声明图像复制需书面许可；尚未取得该许可。",
+      "source_sha256": "8bc668789ce59b7d799b9540a084a8bc791203775331518b3b8e5d5fe389c762",
+      "delivered_sha256": "28c3c4d380e4b297c0d6b2309203bd7dca5a9311c2724892c9b6b243809fb86a",
+      "processing": "原作数字图像；仅等比缩放、补边和128色PNG压缩；poster_3另裁除白色扫描背景。",
+      "rights_status": "未确认公开发行或商用授权；不声明开放许可。"
+    }
+  ]
+}
