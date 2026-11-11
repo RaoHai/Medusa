@@ -3,7 +3,7 @@ extends Node3D
 
 @export var target_path: NodePath
 @export var follow_speed := 3.5
-@export var zoom := 22.0
+@export var zoom := 20.0
 @export var min_zoom := 9.0
 @export var max_zoom := 80.0
 ## 相机到目标的距离。建筑着色器里的 camera_distance 要和它一致（用于镂空挡住人物的墙）

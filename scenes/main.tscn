@@ -218,7 +218,7 @@ marker_height = 5.8
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Lamp"]
 shape = SubResource("LampShape")
 [node name="HotelDoor" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 104, 1.9, -47.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62.4, 1.9, -27.8)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "矿工文化宫大门"
@@ -251,7 +251,7 @@ marker_height = 2.9
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Board"]
 shape = SubResource("BoardShape")
 [node name="Billboard" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 3.5, -18)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 3.5, 22)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "宣传牌"
@@ -273,7 +273,7 @@ marker_height = 11.0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Monument"]
 shape = SubResource("MonumentShape")
 [node name="Walker" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(0.877583, 0, -0.479426, 0, 1, 0, 0.479426, 0, 0.877583, -22, 5.4, -330)
+transform = Transform3D(0.877583, 0, -0.479426, 0, 1, 0, 0.479426, 0, 0.877583, -18, 5.4, -215)
 collision_layer = 2
 script = ExtResource("3_inter")
 display_name = "步行掘进机"
@@ -287,7 +287,7 @@ shape = SubResource("WalkerShape")
 [node name="PassiveZones" type="Node3D" parent="."]
 
 [node name="Ruins" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 1, 22)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 1, 15)
 script = ExtResource("8_passive")
 skill = "empathy"
 difficulty = 7
@@ -314,7 +314,7 @@ text = "供暖管的接头在漏汽。暖的。如果再有一杯酒，这个极
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PipeSteam"]
 shape = SubResource("ZoneSphere")
 [node name="AvenueNorth" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -120)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -95)
 script = ExtResource("8_passive")
 skill = "hunch"
 difficulty = 8
@@ -323,7 +323,7 @@ text = "大街笔直地往北，一直通到烟囱底下。两边的树挂满了
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/AvenueNorth"]
 shape = SubResource("ZoneBox")
 [node name="PlantGate" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -440)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -285)
 script = ExtResource("8_passive")
 skill = "perception"
 difficulty = 6
@@ -359,13 +359,13 @@ stoop = 0.06
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("6_cam")
 target_path = NodePath("../Player")
-zoom = 22.0
-max_zoom = 80.0
+zoom = 20.0
+max_zoom = 70.0
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
 projection = 1
 current = true
-size = 22.0
+size = 20.0
 near = 0.5
 far = 700.0
 

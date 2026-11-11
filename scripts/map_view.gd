@@ -18,8 +18,8 @@ const KIND_COLORS := {
 const BOUNDS := Rect2(-300, -600, 1020, 1020)
 ## 道路（世界坐标）——和 level_builder.gd 里的一致
 const ROADS := [
-	[Vector2(0, -470), Vector2(0, 180)], [Vector2(-190, 0), Vector2(280, 0)],
-	[Vector2(0, -470), Vector2(-110, -482)], [Vector2(0, 180), Vector2(120, 250)],
+	[Vector2(0, -300), Vector2(0, 115)], [Vector2(-120, 0), Vector2(175, 0)],
+	[Vector2(0, -300), Vector2(-70, -310)], [Vector2(0, 115), Vector2(75, 160)],
 ]
 
 var player: Node3D
@@ -106,8 +106,8 @@ func _draw() -> void:
 		if hl > 12.0 and not String(b["id"]).ends_with("b"):
 			draw_string(font, off + center * k + Vector2(-13, 4), b["id"], HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(INK, 0.85))
 	# 厂区
-	draw_string(font, off + Town.to_map(Vector3(45, 0, -525)) * k + Vector2(-28, 4), "▲ 热电厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
-	draw_string(font, off + Town.to_map(Vector3(-140, 0, -508)) * k + Vector2(-80, 4), "▲ 选矿厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
+	draw_string(font, off + Town.to_map(Vector3(35, 0, -345)) * k + Vector2(-28, 4), "▲ 热电厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
+	draw_string(font, off + Town.to_map(Vector3(-95, 0, -335)) * k + Vector2(-80, 4), "▲ 选矿厂", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, INK)
 	# 你在这里
 	if player:
 		var pp: Vector2 = off + Town.to_map(player.global_position) * k
