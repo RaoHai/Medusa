@@ -1,0 +1,49 @@
+scripts/level_builder.gd
+  s_1a8033d5868175::t_d4bd775391cbdc 19,123-124,197-200,235,406-407,781-782,785,942-943,947-955
+  s_1a8033d5868175::t_8c5b3db38c05e6 93,527,536-537,541-543,547,659,783-784,819,830,835,915-916,956-968
+  s_1a8033d5868175::t_57fc0d7c0e24f6 833
+  s_1a8033d5868175::t_b5a579e043a75c 408
+  s_1a8033d5868175::t_7fb7779989ea8a 733
+  s_1a8033d5868175::t_48fcb4f4db3e49 969-970
+textures/README.md
+  s_1a8033d5868175::t_b4b1016a0397e6 62,64,68
+  s_1a8033d5868175::t_f5eb7565be0386 67
+  s_1a8033d5868175::t_7fb7779989ea8a 63,65-66
+scripts/map_view.gd
+  s_1a8033d5868175::t_8c5b3db38c05e6 6,57-59
+textures/poster-sources.json
+  s_1a8033d5868175::t_b4b1016a0397e6 1-55
+shaders/building.gdshader
+  s_1a8033d5868175::t_b5a579e043a75c 25,126,128,133
+  s_1a8033d5868175::t_cadf8cc36986f7 19-24,79-81,113,119,127,129-132,134-135,137
+scripts/texture_library.gd
+  s_1a8033d5868175::t_cadf8cc36986f7 1-20
+shaders/snow.gdshader
+  s_1a8033d5868175::t_cadf8cc36986f7 13-16,73-75,89-91
+textures/generation-prompts.json
+  s_1a8033d5868175::t_a1c55d2f7d4318 1-67,70
+  s_1a8033d5868175::t_b4b1016a0397e6 68-69
+shaders/painted.gdshader
+  s_1a8033d5868175::t_d4bd775391cbdc 17
+  s_1a8033d5868175::t_8c5b3db38c05e6 18,85-86
+  s_1a8033d5868175::t_cadf8cc36986f7 13-16,25,54,82-84,87-89
+textures/poster-references.md
+  s_1a8033d5868175::t_796eb0aaa8b804 2,4,6,10,12
+  s_1a8033d5868175::t_b4b1016a0397e6 1,3,5,7-9,11,13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d83e33d504304726aba679140fb10ae28093dc37",
+  "prompts": {},
+  "sessions": {
+    "s_1a8033d5868175": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c4e8-5852-7a93-b5db-3d9e96703e33",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "raohai <surgesoft@gmail.com>"
+    }
+  }
+}
