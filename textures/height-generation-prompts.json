@@ -1,0 +1,123 @@
+{
+  "generator": "built-in image_gen",
+  "type": "estimated_grayscale_height_maps",
+  "assets": [
+    {
+      "file": "snow_h.png",
+      "reference": "snow.png",
+      "prompt": "Use case: precise-object-edit. Edit the supplied albedo texture into its MATCHING grayscale height/displacement data map. Preserve exact image framing, orientation, feature coordinates, scale and tile boundaries: no regeneration or rearrangement of the pattern. This is surface DEPTH DATA, NOT a black-and-white photograph, not shading or an ambient occlusion map. White means raised, black means recessed, medium gray means flat. Remove all albedo colors, stains, shadows and lighting; do not interpret color changes as large height changes. Pure neutral grayscale, no alpha, labels, borders, highlights or perspective. Smooth simplified low-frequency height relief, broad smooth value fields with minimal grain so it compresses well, no added fine noise. Seamless across opposite edges. Output a single texture, no comparisons, no rendered 3D relief. 1024x1024 square. Wind-packed snow. Existing wind ridges gently raised pale gray, existing troughs gently lower middle gray. Shallow continuous undulations, no newly invented ridges or objects, eliminate surface sparkle.",
+      "levels": 64,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "snow_road_h.png",
+      "reference": "snow_road.png",
+      "prompt": "Use case: precise-object-edit. Edit the supplied albedo texture into its MATCHING grayscale height/displacement data map. Preserve exact image framing, orientation, feature coordinates, scale and tile boundaries: no regeneration or rearrangement of the pattern. This is surface DEPTH DATA, NOT a black-and-white photograph, not shading or an ambient occlusion map. White means raised, black means recessed, medium gray means flat. Remove all albedo colors, stains, shadows and lighting; do not interpret color changes as large height changes. Pure neutral grayscale, no alpha, labels, borders, highlights or perspective. Smooth simplified low-frequency height relief, broad smooth value fields with minimal grain so it compresses well, no added fine noise. Seamless across opposite edges. Output a single texture, no comparisons, no rendered 3D relief. 1024x1024 square. Compacted snow road. Preserve exact existing faint vertical tire tracks; these are recessed, smooth snow shoulders are higher. Coal dust changes color but does not create pits. Smooth flat gray fields, no gravel-like relief.",
+      "levels": 64,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "concrete_panel_h.png",
+      "reference": "concrete_panel.png",
+      "prompt": "Use case: precise-object-edit. Edit the supplied albedo texture into its MATCHING grayscale height/displacement data map. Preserve exact image framing, orientation, feature coordinates, scale and tile boundaries: no regeneration or rearrangement of the pattern. This is surface DEPTH DATA, NOT a black-and-white photograph, not shading or an ambient occlusion map. White means raised, black means recessed, medium gray means flat. Remove all albedo colors, stains, shadows and lighting; do not interpret color changes as large height changes. Pure neutral grayscale, no alpha, labels, borders, highlights or perspective. Smooth simplified low-frequency height relief, broad smooth value fields with minimal grain so it compresses well, no added fine noise. Seamless across opposite edges. Output a single texture, no comparisons, no rendered 3D relief. 1024x1024 square. Flat plaster concrete. Continuous plaster base near gray 150, fine existing fissures darker, existing small repairs slightly raised. Water streaks must vanish as they have no depth. NO invented panel seams. Very restrained relief.",
+      "levels": 32,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "plaster_peeling_h.png",
+      "reference": "plaster_peeling.png",
+      "prompt": "Use case: precise-object-edit. Edit the supplied albedo texture into its MATCHING grayscale height/displacement data map. Preserve exact image framing, orientation, feature coordinates, scale and tile boundaries: no regeneration or rearrangement of the pattern. This is surface DEPTH DATA, NOT a black-and-white photograph, not shading or an ambient occlusion map. White means raised, black means recessed, medium gray means flat. Remove all albedo colors, stains, shadows and lighting; do not interpret color changes as large height changes. Pure neutral grayscale, no alpha, labels, borders, highlights or perspective. Smooth simplified low-frequency height relief, broad smooth value fields with minimal grain so it compresses well, no added fine noise. Seamless across opposite edges. Output a single texture, no comparisons, no rendered 3D relief. 1024x1024 square. Preserve EXACT boundaries of the existing exposed brick patches. Intact plaster is upper surface light gray, exposed brick is a lower middle-gray plane, mortar recesses darker. A narrow raised edge for curling plaster only where visible. No changes to plaster patch shapes or brick courses.",
+      "levels": 64,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "brick_h.png",
+      "reference": "brick.png",
+      "prompt": "Use case: precise-object-edit. Edit the supplied albedo texture into its MATCHING grayscale height/displacement data map. Preserve exact image framing, orientation, feature coordinates, scale and tile boundaries: no regeneration or rearrangement of the pattern. This is surface DEPTH DATA, NOT a black-and-white photograph, not shading or an ambient occlusion map. White means raised, black means recessed, medium gray means flat. Remove all albedo colors, stains, shadows and lighting; do not interpret color changes as large height changes. Pure neutral grayscale, no alpha, labels, borders, highlights or perspective. Smooth simplified low-frequency height relief, broad smooth value fields with minimal grain so it compresses well, no added fine noise. Seamless across opposite edges. Output a single texture, no comparisons, no rendered 3D relief. 1024x1024 square. Preserve EXACT brick courses, individual brick positions and mortar joint placement. Brick faces are a consistent upper gray level, mortar joints clearly recessed dark gray; bevel the existing edges smoothly. Brick albedo/soot differences do not change broad brick height. Do not invert joints to white.",
+      "levels": 64,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "metal_rust_h.png",
+      "reference": "metal_rust.png",
+      "prompt": "Use case: precise-object-edit. Convert the supplied albedo texture into a MATCHING grayscale height/displacement DATA map. Preserve exact source feature positions, framing, scale, orientation and tile boundaries; do not invent new patterns. White=raised, black=recessed, medium gray=flat. Remove albedo colors, stains, highlights and shadows. NOT merely a desaturated photograph, NOT normal map or ambient occlusion. Smooth simplified macro relief, broad smooth gray fields, MINIMAL grain and no added fine noise so the texture compresses well. Neutral grayscale only, no alpha, text, border, comparison panels, lighting, perspective or 3D rendering. Opposing edges seamlessly tile. 1024x1024 square. Mostly flat iron sheet around medium gray. Existing corrosion crusts slightly raised lighter gray, existing fine pits slightly lower dark gray, but vertical orange-brown runoff stain coloration has NO height and should disappear. Shallow restrained corrosion, no deep holes or new panel seams.",
+      "levels": 32,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "metal_painted_h.png",
+      "reference": "metal_painted.png",
+      "prompt": "Use case: precise-object-edit. Convert the supplied albedo texture into a MATCHING grayscale height/displacement DATA map. Preserve exact source feature positions, framing, scale, orientation and tile boundaries; do not invent new patterns. White=raised, black=recessed, medium gray=flat. Remove albedo colors, stains, highlights and shadows. NOT merely a desaturated photograph, NOT normal map or ambient occlusion. Smooth simplified macro relief, broad smooth gray fields, MINIMAL grain and no added fine noise so the texture compresses well. Neutral grayscale only, no alpha, text, border, comparison panels, lighting, perspective or 3D rendering. Opposing edges seamlessly tile. 1024x1024 square. Keep EXACT chipped-paint island boundaries. Intact paint light gray, exposed metal medium gray, narrow curled paint lips slightly brighter along existing flake borders. Rust coloration and stains should not dominate depth. Very shallow, largely flat fields, no added scratches.",
+      "levels": 64,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "wood_planks_h.png",
+      "reference": "wood_planks.png",
+      "prompt": "Use case: precise-object-edit. Convert the supplied albedo texture into a MATCHING grayscale height/displacement DATA map. Preserve exact source feature positions, framing, scale, orientation and tile boundaries; do not invent new patterns. White=raised, black=recessed, medium gray=flat. Remove albedo colors, stains, highlights and shadows. NOT merely a desaturated photograph, NOT normal map or ambient occlusion. Smooth simplified macro relief, broad smooth gray fields, MINIMAL grain and no added fine noise so the texture compresses well. Neutral grayscale only, no alpha, text, border, comparison panels, lighting, perspective or 3D rendering. Opposing edges seamlessly tile. 1024x1024 square. Keep EXACT original vertical board joints, knots and nail holes. Flat board faces light middle gray, gaps dark recessed gray, nail holes and existing grain grooves slightly darker. Fine albedo streaks are NOT deep grooves. Smooth simple fields with quiet restrained grain and no new boards or nails.",
+      "levels": 32,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    },
+    {
+      "file": "pipe_wrap_h.png",
+      "reference": "pipe_wrap.png",
+      "prompt": "Use case: precise-object-edit. Convert the supplied albedo texture into a MATCHING grayscale height/displacement DATA map. Preserve exact source feature positions, framing, scale, orientation and tile boundaries; do not invent new patterns. White=raised, black=recessed, medium gray=flat. Remove albedo colors, stains, highlights and shadows. NOT merely a desaturated photograph, NOT normal map or ambient occlusion. Smooth simplified macro relief, broad smooth gray fields, MINIMAL grain and no added fine noise so the texture compresses well. Neutral grayscale only, no alpha, text, border, comparison panels, lighting, perspective or 3D rendering. Opposing edges seamlessly tile. 1024x512 landscape, exact 2:1 image aspect. Flat UNROLLED pipe cladding, do NOT render a cylinder. Preserve EXACT original vertical joint-strip positions and rivet centers. Base sheet middle gray, narrow overlap strips slightly raised pale gray, rivet heads rounded brighter gray, existing seams recessed dark. Yellowing and oxidation stains vanish. The sheet is otherwise smooth and flat.",
+      "levels": 32,
+      "dimensions": [
+        1024,
+        512
+      ],
+      "bit_depth": 8,
+      "color_type": "grayscale",
+      "transparent": false
+    }
+  ]
+}

@@ -59,10 +59,18 @@
 
 ## 状态
 
-已交付全部 19 张 PNG，按上表尺寸导出，合计 6,859,536 字节（约 6.86 MB，小于 8 MB）。只有 `facade_ruin.png` 保留透明通道；可选高度图未制作。
+已交付 19 张底色/图片贴图和 A 类材质的 9 张高度图，共 28 张 PNG，合计 7,902,302 字节（约 7.90 MB，小于 8 MB）。只有 `facade_ruin.png` 保留透明通道。
 
 除三张历史海报外，其余贴图使用内置 image_gen 生成，提示词保存在 [generation-prompts.json](generation-prompts.json)。为控制体积，基础贴图使用 48 色 PNG 调色板，历史海报使用 128 色调色板；生成原图保留在本机的 Codex generated_images 目录。
 
 已接入雪地和道路、建筑立面、废墟内墙、金属道具、木箱与长椅、供暖管、候车亭马赛克、宣传牌与文化宫海报，以及 M 键地图底纸。`scripts/texture_library.gd` 统一加载可选贴图，文件缺失时回退到程序化材质。窗洞按本清单的位置计算亮灯；废墟使用 alpha 裁切。
 
 三张海报已直接换成 1930–1931 年真实苏联宣传画扫描图，保留原作俄文（是通用无文字要求的例外）。图像来源与授权状态见 [poster-references.md](poster-references.md)。
+
+## 高度图
+
+A 类 9 张材质均已提供对应的 `_h.png`：`snow`、`snow_road`、`concrete_panel`、`plaster_peeling`、`brick`、`metal_rust`、`metal_painted`、`wood_planks`、`pipe_wrap`。尺寸与底色贴图一致；均为无透明通道的 8 位灰度 PNG，白高黑低。
+
+高度图由内置 image_gen 根据对应底色贴图估计，保留主要接缝与剥落轮廓；不是实测深度。采用 32/64 级量化以控制体积，未经量化的生成原图保留在 Codex generated_images 目录。完整提示词及每张的尺寸和量化等级见 [height-generation-prompts.json](height-generation-prompts.json)。
+
+这些图用于低强度凹凸采样，不改变模型轮廓。采样时按线性数据读取，不加 `source_color`。当前着色器尚未采样高度图；这一批是素材交付。
