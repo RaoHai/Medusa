@@ -1,11 +1,16 @@
 ; Engine configuration file.
-; Godot 4.3+
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
 [application]
 
-config/name="Vesper Harbor - Isometric Detective Demo"
+config/name="霜原-7"
 config/description="等轴透视视角、油画风格的侦探 RPG Demo（灵感来自极乐迪斯科式的叙事与技能检定）。"
 run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
@@ -36,7 +41,6 @@ locale/include_text_server_data=true
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-anti_aliasing/quality/msaa_3d=2
-environment/defaults/default_clear_color=Color(0.06, 0.07, 0.08, 1)
-lights_and_shadows/directional_shadow/size=4096
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+environment/defaults/default_clear_color=Color(0.06, 0.07, 0.08, 1)
+anti_aliasing/quality/msaa_3d=2

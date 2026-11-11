@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/level_builder.gd" id="2_level"]
@@ -12,32 +12,31 @@
 
 [sub_resource type="Environment" id="Env"]
 background_mode = 1
-background_color = Color(0.11, 0.13, 0.15, 1)
+background_color = Color(0.74, 0.76, 0.84, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.2, 0.42, 0.46, 1)
-ambient_light_energy = 0.7
+ambient_light_color = Color(0.7, 0.74, 0.88, 1)
+ambient_light_energy = 0.85
 tonemap_mode = 2
-tonemap_exposure = 1.05
+tonemap_exposure = 1.1
 glow_enabled = true
-glow_intensity = 0.9
-glow_strength = 1.1
-glow_bloom = 0.05
+glow_intensity = 0.7
+glow_strength = 1.0
+glow_bloom = 0.02
 glow_blend_mode = 1
-glow_hdr_threshold = 0.85
+glow_hdr_threshold = 1.15
 fog_enabled = true
-fog_light_color = Color(0.2, 0.3, 0.34, 1)
+fog_light_color = Color(0.78, 0.8, 0.88, 1)
 fog_light_energy = 1.0
-fog_density = 0.004
-fog_height = -0.2
-fog_height_density = 0.25
+fog_density = 0.003
 adjustment_enabled = true
 adjustment_brightness = 1.0
-adjustment_contrast = 1.08
+adjustment_contrast = 1.05
 adjustment_saturation = 1.0
 
 [sub_resource type="NavigationMesh" id="NavMesh"]
 geometry_parsed_geometry_type = 1
 geometry_collision_mask = 1
+cell_size = 0.5
 agent_height = 2.0
 agent_radius = 0.5
 agent_max_climb = 0.25
@@ -50,25 +49,37 @@ height = 1.9
 size = Vector3(1.45, 2.8, 1.45)
 
 [sub_resource type="BoxShape3D" id="PuddleShape"]
-size = Vector3(1.7, 0.08, 1.2)
+size = Vector3(1.8, 0.08, 1.2)
 
 [sub_resource type="BoxShape3D" id="CratesShape"]
-size = Vector3(2.6, 2.0, 2.4)
+size = Vector3(2.8, 2.2, 2.6)
 
 [sub_resource type="BoxShape3D" id="LampShape"]
-size = Vector3(0.6, 4.4, 0.6)
+size = Vector3(0.7, 5.4, 0.7)
 
 [sub_resource type="BoxShape3D" id="DoorShape"]
-size = Vector3(1.9, 2.9, 0.5)
+size = Vector3(2.2, 2.9, 1.6)
 
 [sub_resource type="BoxShape3D" id="BenchShape"]
-size = Vector3(2.2, 1.1, 0.8)
+size = Vector3(3.6, 1.1, 1.0)
+
+[sub_resource type="BoxShape3D" id="BoardShape"]
+size = Vector3(2.7, 1.8, 0.5)
+
+[sub_resource type="BoxShape3D" id="BillboardShape"]
+size = Vector3(0.7, 3.9, 4.7)
+
+[sub_resource type="BoxShape3D" id="MonumentShape"]
+size = Vector3(3.4, 4.2, 3.4)
+
+[sub_resource type="BoxShape3D" id="WalkerShape"]
+size = Vector3(9.5, 6.0, 8.0)
 
 [sub_resource type="BoxShape3D" id="ZoneBox"]
-size = Vector3(3.2, 2, 2.2)
+size = Vector3(4.0, 2, 4.0)
 
 [sub_resource type="SphereShape3D" id="ZoneSphere"]
-radius = 2.6
+radius = 2.8
 
 [sub_resource type="CapsuleShape3D" id="PlayerShape"]
 radius = 0.3
@@ -78,27 +89,30 @@ height = 1.8
 shader = ExtResource("9_paint")
 shader_parameter/radius = 3
 shader_parameter/brush_size = 1.35
-shader_parameter/brush_jitter = 3.0
-shader_parameter/outline_strength = 0.55
-shader_parameter/outline_color = Color(0.06, 0.05, 0.09, 1)
-shader_parameter/saturation = 1.12
-shader_parameter/contrast = 1.08
-shader_parameter/shadow_tint = Color(0.07, 0.2, 0.24, 1)
-shader_parameter/midtone_tint = Color(1, 0.97, 0.94, 1)
-shader_parameter/highlight_tint = Color(1, 0.88, 0.68, 1)
-shader_parameter/color_wash = 0.14
-shader_parameter/impasto = 0.16
-shader_parameter/canvas_grain = 0.08
-shader_parameter/vignette = 0.6
+shader_parameter/brush_jitter = 1.8
+shader_parameter/outline_strength = 0.5
+shader_parameter/outline_color = Color(0.1, 0.1, 0.24, 1)
+shader_parameter/saturation = 1.08
+shader_parameter/contrast = 1.06
+shader_parameter/shadow_tint = Color(0.04, 0.06, 0.2, 1)
+shader_parameter/midtone_tint = Color(0.97, 0.98, 1.02, 1)
+shader_parameter/highlight_tint = Color(1, 0.97, 0.94, 1)
+shader_parameter/color_wash = 0.05
+shader_parameter/impasto = 0.05
+shader_parameter/canvas_grain = 0.05
+shader_parameter/vignette = 0.3
 
-[sub_resource type="StandardMaterial3D" id="RainMat"]
+[sub_resource type="StandardMaterial3D" id="SnowMat"]
 shading_mode = 0
 transparency = 1
-albedo_color = Color(0.75, 0.82, 0.9, 0.16)
+albedo_color = Color(1, 1, 1, 0.8)
 
-[sub_resource type="BoxMesh" id="RainDrop"]
-material = SubResource("RainMat")
-size = Vector3(0.012, 0.55, 0.012)
+[sub_resource type="SphereMesh" id="SnowFlake"]
+material = SubResource("SnowMat")
+radius = 0.04
+height = 0.08
+radial_segments = 6
+rings = 3
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -106,19 +120,19 @@ script = ExtResource("1_main")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env")
 
-[node name="DawnKey" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.330350, 0.000000, -0.943858, -0.419076, 0.896025, -0.146677, 0.845721, 0.444003, 0.296002, 0, 12, 0)
-light_color = Color(1, 0.6, 0.4, 1)
-light_energy = 0.8
+[node name="LowSun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.265156, 0.000000, -0.964205, -0.365612, 0.925321, -0.100543, 0.892199, 0.379185, 0.245355, 0, 12, 0)
+light_color = Color(1, 0.76, 0.6, 1)
+light_energy = 1.15
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 1.5
-directional_shadow_max_distance = 80.0
+directional_shadow_max_distance = 90.0
 
-[node name="CoolFill" type="DirectionalLight3D" parent="."]
+[node name="SkyFill" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.982872, -0.000000, 0.184289, 0.109350, 0.804936, -0.583199, -0.148340, 0.593362, 0.791149, 0, 12, 0)
-light_color = Color(0.4, 0.58, 0.85, 1)
-light_energy = 0.4
+light_color = Color(0.56, 0.68, 1, 1)
+light_energy = 0.45
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavMesh")
@@ -129,11 +143,11 @@ script = ExtResource("2_level")
 [node name="Interactables" type="Node3D" parent="NavRegion"]
 
 [node name="Anchor" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 0, -4.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1, 0, 4.1)
 collision_layer = 3
 script = ExtResource("3_inter")
-display_name = "老码头工"
-alt_name = "锚叔"
+display_name = "老司炉"
+alt_name = "炉叔"
 name_flag = "anchor_named"
 dialogue_id = "anchor_start"
 interact_distance = 1.6
@@ -147,131 +161,179 @@ shape = SubResource("NpcShape")
 [node name="Visual" type="Node3D" parent="NavRegion/Interactables/Anchor"]
 transform = Transform3D(-0.479, 0, 0.878, 0, 1, 0, -0.878, 0, -0.479, 0, 0, 0)
 script = ExtResource("4_vis")
-coat_color = Color(0.72, 0.36, 0.12, 1)
-pants_color = Color(0.17, 0.2, 0.24, 1)
+coat_color = Color(0.2, 0.26, 0.36, 1)
+pants_color = Color(0.16, 0.16, 0.18, 1)
 skin_color = Color(0.74, 0.55, 0.44, 1)
 hair_color = Color(0.62, 0.6, 0.58, 1)
 has_hat = true
-hat_color = Color(0.2, 0.25, 0.3, 1)
+hat_color = Color(0.3, 0.24, 0.18, 1)
+ushanka = true
+has_scarf = true
+scarf_color = Color(0.5, 0.42, 0.2, 1)
 body_scale = 0.97
 stoop = 0.18
 
 [node name="PhoneBooth" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -8.5, 1.4, -7.5)
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 21.5, 1.4, -3.3)
 collision_layer = 2
 script = ExtResource("3_inter")
-display_name = "电话亭"
+display_name = "公用终端亭"
 dialogue_id = "phone_start"
 interact_distance = 1.7
-marker_height = 3.2
+marker_height = 3.3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/PhoneBooth"]
 shape = SubResource("PhoneShape")
-
 [node name="Puddle" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.04, -1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0.04, 0.5)
 collision_layer = 2
 script = ExtResource("3_inter")
-display_name = "积水"
+display_name = "冰面"
 dialogue_id = "puddle_start"
 interact_distance = 1.3
 marker_height = 0.6
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Puddle"]
 shape = SubResource("PuddleShape")
-
 [node name="Crates" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6, 1, -0.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.1, 1.1, -3.7)
 collision_layer = 2
 script = ExtResource("3_inter")
-display_name = "一堆木箱"
+display_name = "配给箱"
 dialogue_id = "crates_start"
-interact_distance = 2.0
-marker_height = 2.5
+interact_distance = 2.1
+marker_height = 2.6
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Crates"]
 shape = SubResource("CratesShape")
-
 [node name="Lamp" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 2.2, -3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.7, -3.1)
 collision_layer = 2
 script = ExtResource("3_inter")
-display_name = "路灯"
+display_name = "广播喇叭"
 dialogue_id = "lamp_start"
-interact_distance = 1.4
-marker_height = 4.6
+interact_distance = 1.5
+marker_height = 5.8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Lamp"]
 shape = SubResource("LampShape")
-
 [node name="HotelDoor" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -10.85)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.32, 1.45, -15.6)
 collision_layer = 2
 script = ExtResource("3_inter")
-display_name = "维斯珀旅馆大门"
+display_name = "矿工文化宫大门"
 dialogue_id = "hotel_start"
-interact_distance = 1.9
-marker_height = 3.0
+interact_distance = 2.3
+marker_height = 3.2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/HotelDoor"]
 shape = SubResource("DoorShape")
-
 [node name="Bench" type="StaticBody3D" parent="NavRegion/Interactables"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0.5, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.55, -4.25)
 collision_layer = 2
 script = ExtResource("3_inter")
-display_name = "长椅"
+display_name = "候车亭长椅"
 dialogue_id = "bench_start"
-interact_distance = 1.5
-marker_height = 1.5
+interact_distance = 1.6
+marker_height = 1.6
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Bench"]
 shape = SubResource("BenchShape")
+[node name="Board" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0, 1.5, 3.5)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "建筑编号索引牌"
+dialogue_id = "board_start"
+interact_distance = 1.8
+marker_height = 2.9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Board"]
+shape = SubResource("BoardShape")
+[node name="Billboard" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 2.2, -9.5)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "宣传牌"
+dialogue_id = "billboard_start"
+interact_distance = 2.2
+marker_height = 4.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Billboard"]
+shape = SubResource("BillboardShape")
+[node name="Monument" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -24)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "纪念碑"
+dialogue_id = "monument_start"
+interact_distance = 3.6
+marker_height = 5.2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Monument"]
+shape = SubResource("MonumentShape")
+[node name="Walker" type="StaticBody3D" parent="NavRegion/Interactables"]
+transform = Transform3D(0.877583, 0, -0.479426, 0, 1, 0, 0.479426, 0, 0.877583, -9, 3.0, -118)
+collision_layer = 2
+script = ExtResource("3_inter")
+display_name = "步行掘进机"
+dialogue_id = "walker_start"
+interact_distance = 7.0
+marker_height = 8.6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavRegion/Interactables/Walker"]
+shape = SubResource("WalkerShape")
 
 [node name="PassiveZones" type="Node3D" parent="."]
 
-[node name="PierSmell" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 1, 4.8)
+[node name="Ruins" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1, 7.5)
+script = ExtResource("8_passive")
+skill = "empathy"
+difficulty = 7
+text = "这些楼没有屋顶。雪直接下进了卧室，落在别人留下的床架上。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/Ruins"]
+shape = SubResource("ZoneSphere")
+[node name="FireTracks" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.2, 1, 2.2)
 script = ExtResource("8_passive")
 skill = "perception"
 difficulty = 6
-text = "海水闻起来像柴油、海藻，和一枚压在舌头底下的旧硬币。"
+text = "火桶周围的雪化了一圈。地上有两行脚印：一行是他的，来回添柴；一行是你的，只有来，没有回。"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PierSmell"]
-shape = SubResource("ZoneBox")
-
-[node name="Lighthouse" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75, 1, 11.8)
-script = ExtResource("8_passive")
-skill = "hunch"
-difficulty = 8
-text = "远处的灯塔是黑的。已经三天没有人去点亮它了。它在等一个人——也许是你，也许是一条船。"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/Lighthouse"]
-shape = SubResource("ZoneBox")
-
-[node name="PhoneHush" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1, -6.2)
-script = ExtResource("8_passive")
-skill = "empathy"
-difficulty = 9
-text = "你走近时，电话亭安静了下来——像一个刚哭过、正假装什么都没发生的人。"
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PhoneHush"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/FireTracks"]
 shape = SubResource("ZoneSphere")
-
-[node name="FireWarmth" type="Area3D" parent="PassiveZones"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1, -3.6)
+[node name="PipeSteam" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, -4.6)
 script = ExtResource("8_passive")
 skill = "craving"
 difficulty = 7
-text = "火。暖和。如果再有一杯酒，这个早晨几乎可以算是完美的。"
+text = "供暖管的接头在漏汽。暖的。如果再有一杯酒，这个极夜几乎可以算是完美的。"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/FireWarmth"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PipeSteam"]
 shape = SubResource("ZoneSphere")
+[node name="AvenueNorth" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -42)
+script = ExtResource("8_passive")
+skill = "hunch"
+difficulty = 8
+text = "大街笔直地往北，一直通到烟囱底下。两边的树挂满了霜，像两排举着白旗的人。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/AvenueNorth"]
+shape = SubResource("ZoneBox")
+[node name="PlantGate" type="Area3D" parent="PassiveZones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -138)
+script = ExtResource("8_passive")
+skill = "perception"
+difficulty = 6
+text = "汽笛、皮带廊、蒸汽。厂子是这个镇上唯一还在呼吸的东西。"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassiveZones/PlantGate"]
+shape = SubResource("ZoneBox")
 
 [node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.3, 0, 1.45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2.8)
 collision_layer = 4
 collision_mask = 1
 script = ExtResource("5_player")
@@ -282,41 +344,47 @@ shape = SubResource("PlayerShape")
 
 [node name="Visual" type="Node3D" parent="Player"]
 script = ExtResource("4_vis")
-coat_color = Color(0.27, 0.3, 0.22, 1)
+coat_color = Color(0.3, 0.33, 0.3, 1)
 pants_color = Color(0.13, 0.12, 0.14, 1)
 skin_color = Color(0.82, 0.64, 0.53, 1)
 hair_color = Color(0.25, 0.16, 0.1, 1)
+has_hat = true
+hat_color = Color(0.36, 0.36, 0.38, 1)
+ushanka = true
 has_scarf = true
-scarf_color = Color(0.5, 0.13, 0.1, 1)
+scarf_color = Color(0.62, 0.13, 0.1, 1)
 body_scale = 1.05
 stoop = 0.06
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("6_cam")
 target_path = NodePath("../Player")
+zoom = 14.0
+max_zoom = 34.0
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
 projection = 1
 current = true
-size = 13.0
+size = 14.0
 near = 0.5
-far = 200.0
+far = 260.0
 
-[node name="Rain" type="CPUParticles3D" parent="CameraRig"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 0)
-amount = 1400
-lifetime = 0.75
-preprocess = 1.0
+[node name="Snowfall" type="CPUParticles3D" parent="CameraRig"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 12, -1)
+amount = 1100
+lifetime = 4.2
+preprocess = 4.0
 local_coords = false
-mesh = SubResource("RainDrop")
+mesh = SubResource("SnowFlake")
 emission_shape = 3
-emission_box_extents = Vector3(20, 0.5, 20)
-particle_flag_align_y = true
-direction = Vector3(0.12, -1, 0.06)
-spread = 2.0
-gravity = Vector3(0, -12, 0)
-initial_velocity_min = 13.0
-initial_velocity_max = 16.0
+emission_box_extents = Vector3(24, 0.5, 24)
+direction = Vector3(-0.5, -1, 0.25)
+spread = 12.0
+gravity = Vector3(-0.5, -0.4, 0.2)
+initial_velocity_min = 2.6
+initial_velocity_max = 4.2
+scale_amount_min = 0.6
+scale_amount_max = 1.5
 
 [node name="PostFX" type="CanvasLayer" parent="."]
 

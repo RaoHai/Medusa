@@ -2,7 +2,7 @@ extends Node3D
 ## 主场景控制：烘焙导航、鼠标拾取（移动/交互/悬停）、对话开关、开场。
 
 @export var intro_dialogue := "intro"
-@export var location_title := "维斯珀港 · 码头区 · 黎明前"
+@export var location_title := "霜原-7 · 十字街口 · 极夜第四十天"
 
 @onready var player: CharacterBody3D = $Player
 @onready var cam: Camera3D = $CameraRig/Camera3D
@@ -16,7 +16,10 @@ var _click_ring: MeshInstance3D
 
 func _ready() -> void:
 	GameState.reset()
+	# 镇子很大，导航网格用 0.5 米的格子烘焙；地图的格子大小要和它一致
+	NavigationServer3D.map_set_cell_size(get_world_3d().navigation_map, 0.5)
 	nav_region.bake_navigation_mesh(false)
+	ui.map_view.player = player
 	player.arrived_at.connect(_on_player_arrived)
 	ui.dialogue_finished.connect(_on_dialogue_finished)
 	_make_click_ring()
@@ -27,7 +30,7 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if ui.is_dialogue_open():
+	if ui.blocks_world_input():
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var hit := _pick(event.position)
@@ -47,7 +50,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	var target: Node3D = null
-	if not ui.is_dialogue_open():
+	if not ui.blocks_world_input():
 		var hit := _pick(get_viewport().get_mouse_position())
 		if not hit.is_empty():
 			target = _interactable_from(hit.collider)

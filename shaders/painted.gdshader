@@ -16,6 +16,10 @@ uniform float hue_drift : hint_range(0.0, 1.0) = 0.35;
 uniform float banding : hint_range(0.0, 1.0) = 0.8;
 
 varying vec3 wpos;
+// 人物被挡住时的镂空：相机始终对着人物（见 camera_rig.gd），所以人物在视图空间里
+// 位于 (0, 0, -camera_distance)。片元比人物离相机近、且落在画面中心附近时，按抖动图案丢弃。
+uniform float camera_distance = 90.0;
+varying vec3 vpos_view;
 
 float hash3(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
 float noise3(vec3 p) {
@@ -30,9 +34,19 @@ float noise3(vec3 p) {
 
 void vertex() {
 	wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	vpos_view = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 void fragment() {
+	{
+		float ahead = vpos_view.z + camera_distance;
+		float d = length(vpos_view.xy - vec2(0.0, 0.6));
+		float cut = (1.0 - smoothstep(3.0, 5.5, d)) * smoothstep(1.2, 2.5, ahead);
+		float dither = fract(dot(floor(FRAGCOORD.xy), vec2(0.7548777, 0.5698403)));
+		if (cut > dither * 0.9 + 0.1) {
+			discard;
+		}
+	}
 	float n = noise3(wpos * noise_scale) * 0.6 + noise3(wpos * noise_scale * 3.1) * 0.4;
 	// 斜向的长笔触
 	vec3 sp = vec3(dot(wpos.xz, vec2(0.7, 0.7)) * 0.9, wpos.y * 4.5 + dot(wpos.xz, vec2(-0.7, 0.7)) * 3.0, 0.0);

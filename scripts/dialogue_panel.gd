@@ -11,7 +11,7 @@ const COL_TEXT := Color("d8cfc0")
 const COL_NARRATION := Color("a89f92")
 const COL_SPEAKER := Color("efe4d2")
 const COL_YOU := Color("c9a46a")
-const COL_OPTION := Color("c9533f")
+const COL_OPTION := Color("e0503c")
 const COL_OPTION_HOVER := Color("f2e6d4")
 const COL_RED_CHECK := Color("e0503c")
 const COL_DIM := Color("7d756b")
@@ -46,7 +46,7 @@ func is_open() -> bool:
 func open(dialogue_id: String, title: String) -> void:
 	visible = true
 	_open = true
-	_header.text = title
+	_header.text = "笔录　" + title
 	_log.clear()
 	_log.text = ""
 	_clear_options()
@@ -296,11 +296,22 @@ func _build() -> void:
 	v.add_theme_constant_override("separation", 12)
 	add_child(v)
 
+	# 红色抬头条：像一份笔录的表头
+	var band := PanelContainer.new()
+	var band_sb := StyleBoxFlat.new()
+	band_sb.bg_color = Color("c8281e")
+	band_sb.content_margin_left = 14
+	band_sb.content_margin_right = 14
+	band_sb.content_margin_top = 6
+	band_sb.content_margin_bottom = 6
+	band_sb.skew = Vector2(0.25, 0.0)
+	band.add_theme_stylebox_override("panel", band_sb)
+	band.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_header = Label.new()
-	_header.add_theme_font_size_override("font_size", 14)
-	_header.add_theme_color_override("font_color", COL_DIM)
-	v.add_child(_header)
-	v.add_child(_sep())
+	_header.add_theme_font_size_override("font_size", 15)
+	_header.add_theme_color_override("font_color", Color("e8dcc0"))
+	band.add_child(_header)
+	v.add_child(band)
 
 	_log = RichTextLabel.new()
 	_log.bbcode_enabled = true

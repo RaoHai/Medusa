@@ -6,7 +6,8 @@ extends Node3D
 @export var zoom := 13.0
 @export var min_zoom := 7.0
 @export var max_zoom := 24.0
-@export var distance := 60.0
+## 相机到目标的距离。建筑着色器里的 camera_distance 要和它一致（用于镂空挡住人物的墙）
+@export var distance := 90.0
 
 @onready var cam: Camera3D = $Camera3D
 var _target: Node3D
@@ -17,7 +18,7 @@ func _ready() -> void:
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.size = zoom
 	cam.near = 0.5
-	cam.far = 200.0
+	cam.far = 260.0
 	cam.rotation_degrees = Vector3(-35.264, 45.0, 0.0)
 	cam.position = cam.transform.basis.z * distance
 	if _target:

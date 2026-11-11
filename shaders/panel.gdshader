@@ -2,8 +2,8 @@
 shader_type canvas_item;
 
 uniform vec4 base_color : source_color = vec4(0.045, 0.042, 0.04, 0.95);
-uniform vec4 warm_color : source_color = vec4(0.20, 0.12, 0.06, 1.0);
-uniform vec4 cool_color : source_color = vec4(0.03, 0.07, 0.08, 1.0);
+uniform vec4 warm_color : source_color = vec4(0.30, 0.06, 0.04, 1.0);
+uniform vec4 cool_color : source_color = vec4(0.05, 0.05, 0.08, 1.0);
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p) {

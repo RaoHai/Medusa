@@ -29,6 +29,11 @@ const PAINTED := preload("res://shaders/painted.gdshader")
 	set(v):
 		hat_color = v
 		_rebuild()
+## 护耳帽：帽檐换成垂下来的两片护耳
+@export var ushanka := false:
+	set(v):
+		ushanka = v
+		_rebuild()
 @export var has_scarf := false:
 	set(v):
 		has_scarf = v
@@ -113,7 +118,15 @@ func _rebuild() -> void:
 	_box(head, Vector3(0.035, 0.06, 0.05), Vector3(0, -0.01, 0.14), skin)  # 鼻子
 	var h := _sphere(head, 0.148, Vector3(0, 0.035, -0.02), hair)
 	h.scale = Vector3(1.0, 0.85, 1.0)
-	if has_hat:
+	if has_hat and ushanka:
+		var fur := _mat(hat_color)
+		var crown := _cyl(head, 0.155, 0.165, 0.15, Vector3(0, 0.1, -0.005), fur)
+		crown.scale = Vector3(1.0, 1.0, 1.05)
+		_box(head, Vector3(0.26, 0.09, 0.05), Vector3(0, 0.1, 0.15), _mat(hat_color.lightened(0.12)))
+		for sx in [-1.0, 1.0]:
+			_box(head, Vector3(0.05, 0.2, 0.17), Vector3(sx * 0.155, -0.02, -0.01), fur)
+		_box(head, Vector3(0.04, 0.04, 0.01), Vector3(0, 0.11, 0.178), _mat(Color(0.7, 0.12, 0.09)))
+	elif has_hat:
 		var hm := _mat(hat_color)
 		_cyl(head, 0.27, 0.27, 0.025, Vector3(0, 0.1, 0), hm)
 		_cyl(head, 0.14, 0.16, 0.16, Vector3(0, 0.19, 0), hm)
