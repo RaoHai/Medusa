@@ -1,0 +1,21 @@
+textures/height-generation-prompts.json
+  s_1a8033d5868175::t_e752137eea758c 1-123
+textures/README.md
+  s_1a8033d5868175::t_14f832b2a10ea5 62,69-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b952f5eae286fe45dda5b758d42074d6653aaa69",
+  "prompts": {},
+  "sessions": {
+    "s_1a8033d5868175": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1c4e8-5852-7a93-b5db-3d9e96703e33",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "raohai <surgesoft@gmail.com>"
+    }
+  }
+}
