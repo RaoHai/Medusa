@@ -47,6 +47,9 @@ var _beacons: Array[MeshInstance3D] = []
 var _font: Font
 var _snow_material: ShaderMaterial
 var _mat_cache := {}
+var _ground_mat: ShaderMaterial
+var _cone_mat: ShaderMaterial
+var _lamp_points := PackedVector3Array()
 var _rng := RandomNumberGenerator.new()
 
 
@@ -62,6 +65,8 @@ func build() -> void:
 	_beacons.clear()
 	_snow_material = null
 	_mat_cache.clear()
+	_cone_mat = null
+	_lamp_points.clear()
 	_font = Fonts.make(900)
 
 	_build_ground()
@@ -87,6 +92,7 @@ func build() -> void:
 	_build_billboard(Vector3(-3.6, 0, 22), "煤是工业的面包", "第七矿超额完成\n第四季度采掘任务")
 	_build_walker(Vector3(-9, 0, -118))
 	_build_truck(Vector3(-16, 0, 2.6))
+	_build_street_lamps()
 	_merge_static()
 
 
@@ -124,6 +130,7 @@ func _build_ground() -> void:
 	mat.set_shader_parameter("roads", segs)
 	mat.set_shader_parameter("road_width", widths)
 	mat.set_shader_parameter("road_count", ROADS.size())
+	_ground_mat = mat
 	# 可行走的雪地（顶面 y=0）
 	_box(Vector3(440, 2.0, 380), Vector3(-65, -1.0, -50), Color.WHITE, true, 0.0, mat)
 	# 远处的苔原，只用来铺满画面
@@ -155,9 +162,9 @@ func _build_town() -> void:
 			"husk":
 				_block(root, length, width, floors, sd, 0.012, Color(0.60, 0.60, 0.62), 0.85)
 			"block":
-				_block(root, length, width, floors, sd, 0.3, _block_color(sd), 0.45)
+				_block(root, length, width, floors, sd, 0.13, _block_color(sd), 0.45)
 			"public":
-				_block(root, length, width, floors, sd, 0.45, Color(0.74, 0.68, 0.52), 0.35)
+				_block(root, length, width, floors, sd, 0.22, Color(0.74, 0.68, 0.52), 0.35)
 		var h := floors * FLOOR_H
 		var sb := StaticBody3D.new()
 		var cs := CollisionShape3D.new()
@@ -468,9 +475,10 @@ func _steam(p: Vector3, size: float) -> void:
 	curve.add_point(Vector2(1, 1.3))
 	s.scale_amount_curve = curve
 	var grad := Gradient.new()
-	grad.set_color(0, Color(1.0, 0.97, 0.94, 0.9))
-	grad.set_color(1, Color(0.78, 0.80, 0.90, 0.0))
-	grad.add_point(0.5, Color(0.95, 0.90, 0.90, 0.6))
+	# 夜里的蒸汽：刚出烟囱时被厂区的灯映成暖灰，散开后融进雾里
+	grad.set_color(0, Color(0.50, 0.44, 0.40, 0.85))
+	grad.set_color(1, Color(0.10, 0.13, 0.19, 0.0))
+	grad.add_point(0.4, Color(0.26, 0.29, 0.36, 0.55))
 	s.color_ramp = grad
 	var q := SphereMesh.new()
 	q.radius = 1.0
@@ -548,6 +556,7 @@ func _build_loudspeaker(p: Vector3) -> void:
 	_box(Vector3(0.26, 0.2, 0.26), Vector3(0, -0.08, 0), Color.BLACK, false, 0.0, _mat(Color(0.4, 0.3, 0.15), 0.3, Color(1.0, 0.78, 0.45), 4.0), head)
 	_omni(p + Vector3(0, 3.5, 0.72), Color(1.0, 0.76, 0.48), 1.6, 9.0, false)
 	_light_cone(p + Vector3(0, 3.7, 0.72), 3.7, 2.2, Color(1.0, 0.80, 0.5), 0.12)
+	_lamp_points.append(p + Vector3(0, 0, 0.72))
 	_box(Vector3(0.9, 0.55, 0.03), p + Vector3(0.52, 3.0, 0), RED, false)
 
 
@@ -1030,7 +1039,7 @@ func _merge_static() -> void:
 		if mi == null or mi.mesh == null or _beacons.has(mi):
 			continue
 		var mat := mi.material_override
-		if mat == null or (mat is ShaderMaterial and (mat as ShaderMaterial).shader != PAINTED):
+		if mat == null or (mat is ShaderMaterial and not [PAINTED, LIGHT_CONE].has((mat as ShaderMaterial).shader)):
 			continue
 		var key := [mat.get_instance_id(), mi.cast_shadow]
 		if not groups.has(key):
@@ -1057,3 +1066,58 @@ func _merge_static() -> void:
 			else:
 				# 还挂着碰撞体或子节点：留下节点，只去掉网格
 				mi.mesh = null
+
+
+func _build_street_lamps() -> void:
+	# 钠灯：沿大街和十字街交错排开。真正的点光源太多会超出每个物体 8 盏灯的上限，
+	# 所以灯下的光斑画在雪地着色器里，灯本身只有发光的灯头和一个光锥
+	var z := -144.0
+	var i := 0
+	while z < 58.0:
+		if absf(z) > 7.0 and absf(z + 24.0) > 5.0:
+			_street_lamp(Vector3(2.9 if i % 2 == 0 else -2.9, 0, z), -1.0 if i % 2 == 0 else 1.0, true)
+		z += 13.0
+		i += 1
+	var x := -58.0
+	while x < 90.0:
+		if absf(x) > 9.0 and absf(x - 9.0) > 4.0 and absf(x - 21.5) > 3.0:
+			_street_lamp(Vector3(x, 0, 2.7 if i % 2 == 0 else -2.7), -1.0 if i % 2 == 0 else 1.0, false)
+		x += 13.0
+		i += 1
+	# 厂区门口
+	for p in [Vector3(-8, 0, -156), Vector3(6, 0, -160), Vector3(-30, 0, -158)]:
+		_street_lamp(p, 1.0, false)
+	var pts := _lamp_points.duplicate()
+	var n := mini(pts.size(), 40)
+	pts.resize(40)
+	_ground_mat.set_shader_parameter("lamps", pts)
+	_ground_mat.set_shader_parameter("lamp_count", n)
+
+
+func _street_lamp(p: Vector3, arm_dir: float, along_x: bool) -> void:
+	# arm_dir：灯臂朝哪一侧伸；along_x：灯臂沿 X 轴（大街两侧）还是沿 Z 轴（十字街两侧）
+	var arm := Vector3(arm_dir * 1.0, 0, 0) if along_x else Vector3(0, 0, arm_dir * 1.0)
+	_cyl(0.06, 0.09, 4.8, p + Vector3(0, 2.4, 0), IRON, false)
+	_box(Vector3(1.0, 0.07, 0.07) if along_x else Vector3(0.07, 0.07, 1.0), p + Vector3(0, 4.8, 0) + arm * 0.5, IRON, false)
+	var head := p + Vector3(0, 4.72, 0) + arm
+	_box(Vector3(0.34, 0.12, 0.2) if along_x else Vector3(0.2, 0.12, 0.34), head, Color.BLACK, false, 0.0, _mat(Color(0.3, 0.2, 0.1), 0.4, Color(1.0, 0.62, 0.25), 5.0))
+	if _cone_mat == null:
+		_cone_mat = ShaderMaterial.new()
+		_cone_mat.shader = LIGHT_CONE
+		_cone_mat.set_shader_parameter("color", Color(1.0, 0.62, 0.28))
+		_cone_mat.set_shader_parameter("strength", 0.1)
+	var m := CylinderMesh.new()
+	m.top_radius = 0.1
+	m.bottom_radius = 2.6
+	m.height = 4.6
+	m.radial_segments = 16
+	m.rings = 1
+	m.cap_top = false
+	m.cap_bottom = false
+	var mi := MeshInstance3D.new()
+	mi.mesh = m
+	mi.material_override = _cone_mat
+	mi.position = head - Vector3(0, 2.36, 0)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+	_lamp_points.append(Vector3(head.x, 0, head.z))

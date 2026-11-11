@@ -12,22 +12,22 @@
 
 [sub_resource type="Environment" id="Env"]
 background_mode = 1
-background_color = Color(0.74, 0.76, 0.84, 1)
+background_color = Color(0.075, 0.09, 0.115, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.7, 0.74, 0.88, 1)
-ambient_light_energy = 0.85
+ambient_light_color = Color(0.24, 0.29, 0.38, 1)
+ambient_light_energy = 0.5
 tonemap_mode = 2
-tonemap_exposure = 1.1
+tonemap_exposure = 1.0
 glow_enabled = true
-glow_intensity = 0.7
+glow_intensity = 1.0
 glow_strength = 1.0
-glow_bloom = 0.02
+glow_bloom = 0.08
 glow_blend_mode = 1
-glow_hdr_threshold = 1.15
+glow_hdr_threshold = 0.75
 fog_enabled = true
-fog_light_color = Color(0.78, 0.8, 0.88, 1)
+fog_light_color = Color(0.075, 0.09, 0.115, 1)
 fog_light_energy = 1.0
-fog_density = 0.003
+fog_density = 0.002
 adjustment_enabled = true
 adjustment_brightness = 1.0
 adjustment_contrast = 1.05
@@ -87,25 +87,25 @@ height = 1.8
 
 [sub_resource type="ShaderMaterial" id="PaintMat"]
 shader = ExtResource("9_paint")
-shader_parameter/radius = 3
-shader_parameter/brush_size = 1.35
-shader_parameter/brush_jitter = 1.8
-shader_parameter/outline_strength = 0.5
-shader_parameter/outline_color = Color(0.1, 0.1, 0.24, 1)
-shader_parameter/saturation = 1.08
+shader_parameter/radius = 2
+shader_parameter/brush_size = 1.0
+shader_parameter/paint_amount = 0.3
+shader_parameter/outline_strength = 0.14
+shader_parameter/outline_color = Color(0.01, 0.015, 0.03, 1)
+shader_parameter/saturation = 0.55
 shader_parameter/contrast = 1.06
-shader_parameter/shadow_tint = Color(0.04, 0.06, 0.2, 1)
-shader_parameter/midtone_tint = Color(0.97, 0.98, 1.02, 1)
-shader_parameter/highlight_tint = Color(1, 0.97, 0.94, 1)
-shader_parameter/color_wash = 0.05
-shader_parameter/impasto = 0.05
-shader_parameter/canvas_grain = 0.05
-shader_parameter/vignette = 0.3
+shader_parameter/shadow_tint = Color(0.03, 0.038, 0.052, 1)
+shader_parameter/midtone_tint = Color(0.92, 0.97, 1.05, 1)
+shader_parameter/highlight_tint = Color(1.08, 0.96, 0.8, 1)
+shader_parameter/mist_color = Color(0.13, 0.15, 0.19, 1)
+shader_parameter/mist = 0.1
+shader_parameter/film_grain = 0.07
+shader_parameter/vignette = 0.95
 
 [sub_resource type="StandardMaterial3D" id="SnowMat"]
 shading_mode = 0
 transparency = 1
-albedo_color = Color(1, 1, 1, 0.8)
+albedo_color = Color(0.75, 0.82, 0.95, 0.4)
 
 [sub_resource type="SphereMesh" id="SnowFlake"]
 material = SubResource("SnowMat")
@@ -120,10 +120,10 @@ script = ExtResource("1_main")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env")
 
-[node name="LowSun" type="DirectionalLight3D" parent="."]
+[node name="SkyGlow" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.265156, 0.000000, -0.964205, -0.365612, 0.925321, -0.100543, 0.892199, 0.379185, 0.245355, 0, 12, 0)
-light_color = Color(1, 0.76, 0.6, 1)
-light_energy = 1.15
+light_color = Color(0.5, 0.58, 0.75, 1)
+light_energy = 0.3
 shadow_enabled = true
 shadow_bias = 0.05
 shadow_blur = 1.5
@@ -131,8 +131,8 @@ directional_shadow_max_distance = 90.0
 
 [node name="SkyFill" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.982872, -0.000000, 0.184289, 0.109350, 0.804936, -0.583199, -0.148340, 0.593362, 0.791149, 0, 12, 0)
-light_color = Color(0.56, 0.68, 1, 1)
-light_energy = 0.45
+light_color = Color(0.35, 0.45, 0.7, 1)
+light_energy = 0.1
 
 [node name="NavRegion" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavMesh")

@@ -12,6 +12,18 @@ uniform int road_count = 0;
 uniform vec2 wind_dir = vec2(0.8, 0.6);
 
 varying vec3 wpos;
+varying vec3 vpos_view;
+uniform float camera_distance = 90.0;
+// 极夜的雾：离画面中心（也就是人物）越远，越沉进蓝灰色的雾里
+uniform vec3 fog_color : source_color = vec3(0.075, 0.09, 0.115);
+uniform float fog_start = 12.0;
+uniform float fog_end = 46.0;
+uniform float fog_max : hint_range(0.0, 1.0) = 0.96;
+// 路灯：xyz = 灯头下方的地面位置（y 不用），在雪地上画出钠灯的暖色光斑
+uniform vec3 lamps[40];
+uniform int lamp_count = 0;
+uniform vec3 lamp_color : source_color = vec3(1.0, 0.62, 0.28);
+uniform float lamp_radius = 4.2;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p) {
@@ -27,6 +39,11 @@ float fbm(vec2 p) {
 	return v;
 }
 // 点到线段的距离，t 返回沿线段的位置
+float night_fog(vec3 v, float cam_dist) {
+	float dist = length(vec3(v.xy, v.z + cam_dist));
+	return smoothstep(fog_start, fog_end, dist) * fog_max;
+}
+
 float seg_dist(vec2 p, vec2 a, vec2 b, out float side) {
 	vec2 ab = b - a;
 	float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
@@ -37,6 +54,7 @@ float seg_dist(vec2 p, vec2 a, vec2 b, out float side) {
 
 void vertex() {
 	wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	vpos_view = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 void fragment() {
@@ -65,8 +83,15 @@ void fragment() {
 
 	// 冰晶反光
 	float sparkle = step(0.992, hash(floor(p * 9.0))) * (1.0 - road);
-	ALBEDO = c;
-	EMISSION = vec3(1.0, 0.95, 0.9) * sparkle * 0.25;
+	float pool = 0.0;
+	for (int i = 0; i < lamp_count; i++) {
+		vec2 d = p - lamps[i].xz;
+		pool += exp(-dot(d, d) / (lamp_radius * lamp_radius));
+	}
+	pool = min(pool, 1.2);
+	float fog = night_fog(vpos_view, camera_distance);
+	ALBEDO = c * (1.0 - fog);
+	EMISSION = (lamp_color * mix(vec3(0.6), c, 0.5) * pool * 0.8 + vec3(1.0, 0.9, 0.75) * sparkle * pool * 0.5) * (1.0 - fog * 0.6) + fog_color * fog;
 	ROUGHNESS = mix(0.92, 0.5, road * 0.6);
 	SPECULAR = 0.3;
 }

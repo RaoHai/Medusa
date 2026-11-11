@@ -161,7 +161,7 @@ func _mat(c: Color, rough := 0.85) -> ShaderMaterial:
 	m.set_shader_parameter("variation", 0.15)
 	# 一点自发光补光，让人物在暗处也能从背景里读出来
 	m.set_shader_parameter("emission", c)
-	m.set_shader_parameter("emission_energy", 0.22)
+	m.set_shader_parameter("emission_energy", 0.1)
 	return m
 
 

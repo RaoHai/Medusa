@@ -24,6 +24,11 @@ varying vec3 wpos;
 // 位于 (0, 0, -camera_distance)。片元比人物离相机近、且落在画面中心附近时，按抖动图案丢弃。
 uniform float camera_distance = 90.0;
 varying vec3 vpos_view;
+// 极夜的雾：离画面中心（也就是人物）越远，越沉进蓝灰色的雾里
+uniform vec3 fog_color : source_color = vec3(0.075, 0.09, 0.115);
+uniform float fog_start = 12.0;
+uniform float fog_end = 46.0;
+uniform float fog_max : hint_range(0.0, 1.0) = 0.96;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p) {
@@ -32,6 +37,11 @@ float vnoise(vec2 p) {
 	f = f * f * (3.0 - 2.0 * f);
 	return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
 			   mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+
+float night_fog(vec3 v, float cam_dist) {
+	float dist = length(vec3(v.xy, v.z + cam_dist));
+	return smoothstep(fog_start, fog_end, dist) * fog_max;
 }
 
 void vertex() {
@@ -114,9 +124,11 @@ void fragment() {
 		float fr = clamp(base + (top + rime) * frost, 0.0, 1.0) * (1.0 - step(0.5, win) * 0.8);
 		c = mix(c, vec3(0.88, 0.91, 0.98), fr * frost + base * (1.0 - frost));
 	}
-	ALBEDO = c;
+	float fog = night_fog(vpos_view, camera_distance);
+	ALBEDO = c * (1.0 - fog);
 	ROUGHNESS = rough;
-	EMISSION = emit;
+	// 远处的亮窗在雾里还剩一点光
+	EMISSION = emit * (1.0 - fog * 0.75) + fog_color * fog;
 }
 
 void light() {
