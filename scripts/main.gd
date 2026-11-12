@@ -1,6 +1,8 @@
 extends Node3D
 ## 主场景控制：烘焙导航、鼠标拾取（移动/交互/悬停）、对话开关、开场。
 
+const Town := preload("res://scripts/town_data.gd")
+
 @export var intro_dialogue := "intro"
 @export var location_title := "霜原-7 · 十字街口 · 极夜第四十天"
 
@@ -18,6 +20,10 @@ func _ready() -> void:
 	GameState.reset()
 	# 镇子很大，导航网格用 0.5 米的格子烘焙；地图的格子大小要和它一致
 	NavigationServer3D.map_set_cell_size(get_world_3d().navigation_map, 0.5)
+	# 文化宫（B122）的位置来自建筑数据，门的交互点跟着它走
+	var palace := Town.pos_of("B122")
+	var door: Node3D = $NavRegion/Interactables/HotelDoor
+	door.position = Vector3(palace.x, 1.9, palace.z + 18.0 * Town.scale() * 0.5 + 1.6)
 	nav_region.bake_navigation_mesh(false)
 	ui.map_view.player = player
 	player.arrived_at.connect(_on_player_arrived)

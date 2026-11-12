@@ -18,8 +18,8 @@ const Fonts := preload("res://scripts/fonts.gd")
 const Town := preload("res://scripts/town_data.gd")
 const Textures := preload("res://scripts/texture_library.gd")
 
-## 层高（米）。楼高和人是真实尺寸（人 1.8 米）；平面按 buildings.json 的 scale 压缩过，
-## 街道和楼间距比现实窄，走起来不那么空
+## 层高（米）。楼的占地、楼高和人都是真实尺寸（人 1.8 米）；
+## 只有楼与楼之间的距离被 tools/relax_layout.py 收窄了，走起来不那么空
 const FLOOR_H := 2.9
 ## 一个开间的宽度（米），也是立面贴图一格的宽度
 const BAY_W := 3.2
@@ -87,7 +87,7 @@ func build() -> void:
 	# 十字街口的布景（街道家具是人的尺度）
 	_build_bus_stop(Vector3(-9, 0, -8.5))
 	_build_loudspeaker(Vector3(6.5, 0, -6.5))
-	_build_fire_barrel(Vector3(12, 0, 7))
+	_build_fire_barrel(Vector3(12, 0, 5.6))
 	_build_ice_patch(Vector3(5, 0, 1.2))
 	_build_ration_crates(Vector3(20, 0, -7.5))
 	_build_map_board(Vector3(-7, 0, 7.5))
@@ -142,14 +142,14 @@ func _build_ground() -> void:
 	mat.set_shader_parameter("road_count", ROADS.size())
 	_ground_mat = mat
 	# 可行走的雪地（顶面 y=0）
-	_box(Vector3(720, 2.0, 660), Vector3(-120, -1.0, -110), Color.WHITE, true, 0.0, mat)
+	_box(Vector3(820, 2.0, 680), Vector3(-150, -1.0, -110), Color.WHITE, true, 0.0, mat)
 	# 远处的苔原，只用来铺满画面
 	var far := MeshInstance3D.new()
 	var pm := PlaneMesh.new()
 	pm.size = Vector2(4000, 4000)
 	far.mesh = pm
 	far.material_override = mat
-	far.position = Vector3(-120, -0.05, -110)
+	far.position = Vector3(-150, -0.05, -110)
 	far.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(far)
 
@@ -159,7 +159,7 @@ func _build_town() -> void:
 	for b in Town.buildings():
 		var root := Node3D.new()
 		root.name = String(b["id"])
-		root.position = Town.to_world(b["x"], b["z"])
+		root.position = Town.pos(b)
 		root.rotation.y = -deg_to_rad(b["rot"])
 		add_child(root)
 		var length: float = b["len"] * s
@@ -291,7 +291,7 @@ func _build_vegetation() -> void:
 		z += 6.0
 	# 苔原上的矮灌木
 	for i in 1500:
-		var p := Vector3(_rng.randf_range(-470, 225), 0, _rng.randf_range(-430, 210))
+		var p := Vector3(_rng.randf_range(-550, 250), 0, _rng.randf_range(-440, 220))
 		if _near_road(p, 4.0) or _inside_building(p, 2.0):
 			continue
 		var sc := _rng.randf_range(0.35, 0.9)
@@ -322,7 +322,7 @@ func _near_road(p: Vector3, margin: float) -> bool:
 func _inside_building(p: Vector3, margin: float) -> bool:
 	var s := Town.scale()
 	for b in Town.buildings():
-		var c := Town.to_world(b["x"], b["z"])
+		var c := Town.pos(b)
 		var d := (p - c).rotated(Vector3.UP, deg_to_rad(b["rot"]))
 		var hl: float = b["len"] * s * 0.5 + margin
 		var hw: float = b["wid"] * s * 0.5 + margin
@@ -727,7 +727,7 @@ func _build_terminal_booth(p: Vector3) -> void:
 
 func _build_boiler_house() -> void:
 	# B125：小锅炉房的砖烟囱和门牌
-	var c := Town.to_world(508, 72)
+	var c := Town.pos_of("B125")
 	var half := 11.0 * Town.scale() * 0.5
 	_cyl(0.9, 1.3, 24.0, c + Vector3(2.8, 12.0 + FLOOR_H, 0.8), Color(0.45, 0.24, 0.18), false)
 	_cyl(1.0, 1.0, 1.2, c + Vector3(2.8, 24.0 + FLOOR_H, 0.8), RED, false)
@@ -739,7 +739,7 @@ func _build_boiler_house() -> void:
 
 func _build_culture_palace() -> void:
 	# B122：矿工文化宫，南立面带柱廊
-	var c := Town.to_world(532, 40)
+	var c := Town.pos_of("B122")
 	var s := Town.scale()
 	var front := c.z + 18.0 * s * 0.5
 	var h := 3 * FLOOR_H
@@ -771,13 +771,14 @@ func _build_heating_pipes() -> void:
 	# 架空供暖管：从锅炉房出来，沿十字街北侧向西，在大街上方拱起一个“П”形补偿弯
 	var y := 2.8
 	var z := -13.0
-	var east := Town.to_world(508, 72).x - 16.0 * Town.scale() * 0.5 - 0.6
+	var boiler := Town.pos_of("B125")
+	var east := boiler.x - 16.0 * Town.scale() * 0.5 - 0.6
 	_pipe_run(Vector3(east, y, z), Vector3(7.0, y, z))
 	_pipe_run(Vector3(7.0, y, z), Vector3(7.0, 6.8, z))
 	_pipe_run(Vector3(7.0, 6.8, z), Vector3(-7.0, 6.8, z))
 	_pipe_run(Vector3(-7.0, 6.8, z), Vector3(-7.0, y, z))
 	_pipe_run(Vector3(-7.0, y, z), Vector3(-80, y, z))
-	_pipe_run(Vector3(east, y, z), Vector3(east, y, -16.0))
+	_pipe_run(Vector3(east, y, z), Vector3(east, y, boiler.z))
 	var x := east - 3.0
 	while x > -80.0:
 		if absf(x) > 8.5:

@@ -15,6 +15,8 @@ var _speed := 3.0
 var _target: Node3D = null
 var _path: PackedVector3Array = []
 var _path_i := 0
+var _stuck_time := 0.0
+var _last_pos := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -53,6 +55,8 @@ func _set_destination(p: Vector3, run: bool) -> void:
 	_path_i = 0
 	_speed = run_speed if run else walk_speed
 	_moving = not _path.is_empty()
+	_stuck_time = 0.0
+	_last_pos = global_position
 	if not _moving and _target:
 		_arrive()
 
@@ -81,6 +85,19 @@ func _physics_process(delta: float) -> void:
 	velocity = dir * minf(_speed, dist / delta)
 	move_and_slide()
 	global_position.y = 0.0
+	# 卡住检测：被什么东西顶住走不动时，不要原地踏步
+	if global_position.distance_to(_last_pos) < _speed * delta * 0.2:
+		_stuck_time += delta
+		if _stuck_time > 0.6:
+			if _target and _flat_dist(_target.global_position) <= _target.interact_distance * 1.8:
+				_arrive()
+			else:
+				_target = null
+				stop()
+			return
+	else:
+		_stuck_time = 0.0
+	_last_pos = global_position
 	visual.rotation.y = lerp_angle(visual.rotation.y, atan2(dir.x, dir.z), 1.0 - exp(-12.0 * delta))
 	var amt := 1.0 if _speed <= walk_speed else 1.5
 	visual.walk_amount = move_toward(visual.walk_amount, amt, delta * 6.0)

@@ -37,3 +37,24 @@ static func to_world(mx: float, mz: float) -> Vector3:
 static func to_map(p: Vector3) -> Vector2:
 	var o: Array = data()["origin"]
 	return Vector2(p.x / scale() + o[0], p.z / scale() + o[1])
+
+
+## 一栋楼在游戏里的世界坐标。
+## 数据里有 wx / wz（tools/relax_layout.py 挤紧街区后算出来的）就用它，
+## 没有就按索引图坐标直接换算。
+static func pos(b: Dictionary) -> Vector3:
+	if b.has("wx") and b.has("wz"):
+		return Vector3(b["wx"], 0.0, b["wz"])
+	return to_world(b["x"], b["z"])
+
+
+static func by_id(id: String) -> Dictionary:
+	for b in buildings():
+		if b["id"] == id:
+			return b
+	return {}
+
+
+static func pos_of(id: String) -> Vector3:
+	var b := by_id(id)
+	return pos(b) if not b.is_empty() else Vector3.ZERO
